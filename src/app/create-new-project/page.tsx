@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -59,6 +60,7 @@ const ProfileForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("Submitted Values are = ", values);
     // TODO: push it to backend to be processed by bull worker
+    axios.post("/api/create-new-project", values);
   }
 
   return (
@@ -113,7 +115,12 @@ const ProfileForm = () => {
               <FormItem>
                 <FormLabel>Upload Your PDF File</FormLabel>
                 <FormControl>
-                  <Input type="file" placeholder="shadcn" {...fileRef} />
+                  <Input
+                    type="file"
+                    placeholder="pdf-file"
+                    accept="application/pdf"
+                    {...fileRef}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
