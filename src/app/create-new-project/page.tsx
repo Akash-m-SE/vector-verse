@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -44,6 +45,8 @@ const formSchema = z.object({
 });
 
 const ProfileForm = () => {
+  const { toast } = useToast();
+
   const initialValues = {
     title: "",
     description: "",
@@ -58,9 +61,22 @@ const ProfileForm = () => {
   const fileRef = form.register("file");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Submitted Values are = ", values);
+    console.log("Submitted Values form frontend are = ", values);
     // TODO: push it to backend to be processed by bull worker
-    axios.post("/api/create-new-project", values);
+    axios
+      .post("/api/create-new-project", values)
+      .then(() => {
+        toast({
+          title: "Success!!",
+          description: "Form Creation Successfull",
+        });
+      })
+      .catch((err) =>
+        console.log(
+          "Something went wrong while posting the values to backend = ",
+          err
+        )
+      );
   }
 
   return (
