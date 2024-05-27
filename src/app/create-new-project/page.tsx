@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 
-const formSchema = z.object({
+export const formSchema = z.object({
   title: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
@@ -42,6 +42,7 @@ const formSchema = z.object({
       const fileExtension = file.name.split(".").pop()?.toLowerCase();
       return fileExtension === "pdf";
     }, "Only PDF files are allowed."),
+  // file: typeof window === "undefined" ? z.any() : z.instanceof(FileList),
 });
 
 const ProfileForm = () => {
@@ -61,22 +62,44 @@ const ProfileForm = () => {
   const fileRef = form.register("file");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Submitted Values form frontend are = ", values);
-    // TODO: push it to backend to be processed by bull worker
-    axios
-      .post("/api/create-new-project", values)
-      .then(() => {
+    try {
+      // event.preventDefault();
+      console.log("Submitted Values form frontend are = ", values);
+      // TODO: push it to backend to be processed by bull worker
+
+      // const response = await axios.post("/api/create-new-project", values);
+      const response = await axios.post("/api/create-new-project", values, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response) {
         toast({
           title: "Success!!",
-          description: "Form Creation Successfull",
+          description: "Project Creation Successfull!!",
         });
-      })
-      .catch((err) =>
+
+        console.log("Response from backend = ", response);
         console.log(
-          "Something went wrong while posting the values to backend = ",
-          err
-        )
+          "Response from backend for file path = ",
+          response.data.fileUrl
+        );
+
+        // TODO: reset the form
+        // form.reset(initialValues);
+      }
+    } catch (error: any) {
+      console.log(
+        "Something went wrong while posting the values to backend =",
+        error
       );
+      toast({
+        variant: "destructive",
+        title: "Uh Oh! Something went wrong!",
+        description: error.message,
+      });
+    }
   }
 
   return (
