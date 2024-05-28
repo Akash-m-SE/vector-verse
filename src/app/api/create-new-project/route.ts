@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
+    // Converting the incoming request items to formData and extracting thier values
     const formData = await request.formData();
     console.log("shadcn form values = ", formData);
 
@@ -23,65 +24,70 @@ export async function POST(request: NextRequest) {
     console.log("title = ", title);
     console.log("description = ", description);
     console.log("uploaded file blob = ", file);
-    console.log("uploaded file blob size = ", file.name);
+    console.log("uploaded file blob name = ", file.name);
     // console.log("uploaded file name = ", file.);
 
-    // File upload to disk
-    // for saving file to disk, we need to convert blob to buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const filepath = await uploadFileToDisk(file);
+    console.log("file path from function = ", filepath);
+    return NextResponse.json({ fileUrl: filepath });
 
-    //structuring the directory name and the path where the file will be stored in the server
-    const relativeUploadDir = `/uploads/${dateFn.format(
-      Date.now(),
-      "dd-MM-y"
-    )}`;
-    const uploadDir = join(process.cwd(), "public", relativeUploadDir);
-
-    try {
-      await stat(uploadDir);
-    } catch (e: any) {
-      if (e.code === "ENOENT") {
-        await mkdir(uploadDir, { recursive: true });
-      } else {
-        console.error(
-          "Error while trying to create directory when uploading a file\n",
-          e
-        );
-        return NextResponse.json(
-          { error: "Something went wrong." },
-          { status: 500 }
-        );
-      }
-    }
-
-    try {
-      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-
-      const filename = `${file.name.replace(
-        /\.[^/.]+$/,
-        ""
-      )}-${uniqueSuffix}.${mime.getExtension(file.type)}`;
-
-      // writing the file to disk
-      await writeFile(`${uploadDir}/${filename}`, buffer);
-
-      // sending back the response
-      // TODO: uploading the file from disk to s3 and fetching the url and saving it to database
-      const fileUrl = `${relativeUploadDir}/${filename}`;
-      console.log("File path from local directory = ", fileUrl);
-      return NextResponse.json({ fileUrl: `${relativeUploadDir}/${filename}` });
-    } catch (e) {
-      console.error("Error while trying to upload a file\n", e);
-      return NextResponse.json(
-        { error: "Something went wrong." },
-        { status: 500 }
-      );
-    }
     // ENd of File Upload
   } catch (error) {
     console.log(error);
     return NextResponse.json(
       { error: "Something went wrong while creating the project" },
+      { status: 500 }
+    );
+  }
+}
+
+async function uploadFileToDisk(file: File) {
+  // File upload to disk
+  // for saving file to disk, we need to convert blob to buffer
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  //structuring the directory name and the path where the file will be stored in the server
+  const relativeUploadDir = `/uploads/${dateFn.format(Date.now(), "dd-MM-y")}`;
+  const uploadDir = join(process.cwd(), "public", relativeUploadDir);
+
+  try {
+    await stat(uploadDir);
+  } catch (e: any) {
+    if (e.code === "ENOENT") {
+      await mkdir(uploadDir, { recursive: true });
+    } else {
+      console.error(
+        "Error while trying to create directory when uploading a file\n",
+        e
+      );
+      return NextResponse.json(
+        { error: "Something went wrong." },
+        { status: 500 }
+      );
+    }
+  }
+
+  try {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+
+    const filename = `${file.name.replace(
+      /\.[^/.]+$/,
+      ""
+    )}-${uniqueSuffix}.${mime.getExtension(file.type)}`;
+
+    // writing the file to disk
+    await writeFile(`${uploadDir}/${filename}`, buffer);
+
+    // sending back the response
+    // TODO: uploading the file from disk to s3 and fetching the url and saving it to database
+    const fileUrl = `${relativeUploadDir}/${filename}`;
+    console.log("File path from local directory = ", fileUrl);
+    // return NextResponse.json({ fileUrl: `${relativeUploadDir}/${filename}` });
+    return fileUrl;
+  } catch (e) {
+    console.error("Error while trying to upload a file\n", e);
+    return NextResponse.json(
+      { error: "Something went wrong." },
       { status: 500 }
     );
   }

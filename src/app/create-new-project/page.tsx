@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 
-export const formSchema = z.object({
+const formSchema = z.object({
   title: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
@@ -28,7 +28,8 @@ export const formSchema = z.object({
     message: "Description must be at least 2 characters.",
   }),
   file: z
-    .instanceof(FileList)
+    // .instanceof(FileList)
+    .any()
     .optional()
     .refine((fileList: FileList | undefined) => {
       if (!fileList || !fileList.length) {
@@ -51,7 +52,7 @@ const ProfileForm = () => {
   const initialValues = {
     title: "",
     description: "",
-    file: undefined,
+    file: null,
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
