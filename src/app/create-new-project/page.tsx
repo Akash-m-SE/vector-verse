@@ -86,6 +86,7 @@ const ProfileForm = () => {
           "Response from backend for file path = ",
           response.data.fileUrl
         );
+        // TODO: accept message from backend not the file path
 
         // TODO: reset the form
         // form.reset(initialValues);

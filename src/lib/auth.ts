@@ -1,10 +1,10 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import prisma from "../../../prisma";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import prisma from "./prisma";
+// import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
   // Configure one or more authentication providers
   providers: [
     GoogleProvider({
@@ -13,10 +13,15 @@ export const authOptions = {
     }),
     // ...add more providers here
   ],
+
+  adapters: PrismaAdapter(prisma),
+
   pages: {
     signIn: "/sign-in",
   },
+
   secret: process.env.NEXTAUTH_SECRET,
+
   session: {
     jwt: true,
     maxAge: 30 * 24 * 60 * 60,

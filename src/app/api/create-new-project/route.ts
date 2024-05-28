@@ -3,10 +3,12 @@ import { join } from "path";
 import { stat, mkdir, writeFile } from "fs/promises";
 import * as dateFn from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
+import { uploadFileToS3 } from "@/actions/aws-actions";
+import fs from "fs/promises";
 
 export async function POST(request: NextRequest) {
   try {
-    // Converting the incoming request items to formData and extracting thier values
+    // Accessing the incoming request items from formData from request
     const formData = await request.formData();
     console.log("shadcn form values = ", formData);
 
@@ -21,17 +23,43 @@ export async function POST(request: NextRequest) {
     }
 
     // Successfully working
-    console.log("title = ", title);
-    console.log("description = ", description);
-    console.log("uploaded file blob = ", file);
-    console.log("uploaded file blob name = ", file.name);
+    // console.log("title = ", title);
+    // console.log("description = ", description);
+    // console.log("uploaded file blob = ", file);
+    // console.log("uploaded file blob name = ", file.name);
     // console.log("uploaded file name = ", file.);
 
+    // Uploading the file to Server to be saved locally
     const filepath = await uploadFileToDisk(file);
+
+    if (!filepath) {
+      return NextResponse.json(
+        { error: "Failed to upload the pdf file in the server." },
+        { status: 400 }
+      );
+    }
+
     console.log("file path from function = ", filepath);
+
+    // TODO: Uploading the file from Server to S3
+    const response = await uploadFileToS3(filepath);
+
+    if (!response) {
+      return NextResponse.json(
+        { error: "Failed to upload the pdf file in the AWS S3 Bucket." },
+        { status: 400 }
+      );
+    }
+    console.log("Name of the pdf file = ", response.fileName);
+    console.log("URL of the pdf file = ", response.objectURL);
+
     return NextResponse.json({ fileUrl: filepath });
+    // TODO:- return json with message
+    // return NextResponse.json({message: "File Uploaded Successfully"}, {status: 200});
 
     // ENd of File Upload
+
+    // TODO: Add Database functionality to create a new PROJECT entry with the title, description, objectURL and fileName
   } catch (error) {
     console.log(error);
     return NextResponse.json(
@@ -60,10 +88,11 @@ async function uploadFileToDisk(file: File) {
         "Error while trying to create directory when uploading a file\n",
         e
       );
-      return NextResponse.json(
-        { error: "Something went wrong." },
-        { status: 500 }
-      );
+      // return NextResponse.json(
+      //   { error: "Something went wrong." },
+      //   { status: 500 }
+      // );
+      return;
     }
   }
 
@@ -79,16 +108,16 @@ async function uploadFileToDisk(file: File) {
     await writeFile(`${uploadDir}/${filename}`, buffer);
 
     // sending back the response
-    // TODO: uploading the file from disk to s3 and fetching the url and saving it to database
     const fileUrl = `${relativeUploadDir}/${filename}`;
-    console.log("File path from local directory = ", fileUrl);
+    // console.log("File path from local directory = ", fileUrl);
     // return NextResponse.json({ fileUrl: `${relativeUploadDir}/${filename}` });
     return fileUrl;
   } catch (e) {
     console.error("Error while trying to upload a file\n", e);
-    return NextResponse.json(
-      { error: "Something went wrong." },
-      { status: 500 }
-    );
+    // return NextResponse.json(
+    //   { error: "Something went wrong." },
+    //   { status: 500 }
+    // );
+    return;
   }
 }
