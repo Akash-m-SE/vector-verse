@@ -5,6 +5,7 @@ import * as dateFn from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { uploadFileToS3 } from "@/actions/aws-actions";
 import fs from "fs/promises";
+import path from "path";
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,6 +53,11 @@ export async function POST(request: NextRequest) {
     }
     console.log("Name of the pdf file = ", response.fileName);
     console.log("URL of the pdf file = ", response.objectURL);
+
+    // const response = true;
+    if (response) {
+      deleteFileFromDisk(filepath);
+    }
 
     return NextResponse.json({ fileUrl: filepath });
     // TODO:- return json with message
@@ -118,6 +124,19 @@ async function uploadFileToDisk(file: File) {
     //   { error: "Something went wrong." },
     //   { status: 500 }
     // );
+    return;
+  }
+}
+
+// Deleting File from Disk
+async function deleteFileFromDisk(filePath: string) {
+  try {
+    const absolutePath = path.join(process.cwd(), "public", filePath);
+
+    await fs.unlink(absolutePath);
+    console.log("Unlinking Successfull");
+  } catch (error) {
+    console.log("Error while trying to unlink the file\n", error);
     return;
   }
 }
