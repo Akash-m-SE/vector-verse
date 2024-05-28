@@ -1,6 +1,6 @@
 import mime from "mime";
 import { join } from "path";
-import { stat, mkdir, writeFile } from "fs/promises";
+import { stat, mkdir, writeFile, readdir, rmdir } from "fs/promises";
 import * as dateFn from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { uploadFileToS3 } from "@/actions/aws-actions";
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     console.log("file path from function = ", filepath);
 
-    // TODO: Uploading the file from Server to S3
+    // TUploading the file from Server to S3
     const response = await uploadFileToS3(filepath);
 
     if (!response) {
@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    console.log("Name of the pdf file = ", response.fileName);
-    console.log("URL of the pdf file = ", response.objectURL);
+    // console.log("Name of the pdf file = ", response.fileName);
+    // console.log("URL of the pdf file = ", response.objectURL);
 
     // const response = true;
     if (response) {
@@ -135,6 +135,21 @@ async function deleteFileFromDisk(filePath: string) {
 
     await fs.unlink(absolutePath);
     console.log("Unlinking Successfull");
+
+    const directoryPath = path.dirname(absolutePath); // Get directory path from file path
+    const directoryContents = await readdir(directoryPath); // Get directory contents
+
+    // console.log(
+    //   "Directory Path = ",
+    //   directoryPath,
+    //   "\n Directory Contents = ",
+    //   directoryContents
+    // );
+
+    if (directoryContents.length === 0) {
+      await rmdir(directoryPath); //Deleting the empty folder from server
+      // console.log("Succesfully Deleted the empty folder");
+    }
   } catch (error) {
     console.log("Error while trying to unlink the file\n", error);
     return;
