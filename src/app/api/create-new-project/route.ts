@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { uploadFileToS3 } from "@/actions/aws-actions";
 import fs from "fs/promises";
 import path from "path";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     console.log("file path from function = ", filepath);
 
-    // TUploading the file from Server to S3
+    // Uploading the file from Server to S3
     const response = await uploadFileToS3(filepath);
 
     if (!response) {
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
     // console.log("Name of the pdf file = ", response.fileName);
     // console.log("URL of the pdf file = ", response.objectURL);
 
+    // Deleting the file from server after entry in database
     // const response = true;
     if (response) {
       deleteFileFromDisk(filepath);

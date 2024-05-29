@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
+import { signOut } from "next-auth/react";
 
 const Navbar = () => {
   return (
@@ -34,7 +35,9 @@ const Navbar = () => {
           </Avatar>
         </div>
         <ModeToggle />
-        <Button variant="destructive">Logout</Button>
+        <Button variant="destructive" onClick={() => signOut()}>
+          Logout
+        </Button>
       </div>
     </div>
   );
