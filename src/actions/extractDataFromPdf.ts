@@ -5,8 +5,8 @@ import { promises as fs } from "fs";
 // Due to the async nature of the pdf parsing function, we have to ensure pdf parsing is complete before we return the result
 async function extract(fileUrl: string): Promise<string> {
   try {
-    const absolutePath = path.join(process.cwd(), "public", fileUrl);
-    console.log("Absolute path for PDF:", absolutePath);
+    const absolutePath = path.join(process.cwd(), fileUrl);
+    // console.log("Absolute path for PDF:", absolutePath);
 
     // Checking if the file exists
     try {

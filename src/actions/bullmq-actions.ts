@@ -1,53 +1,7 @@
 import { Queue, Worker, Job } from "bullmq";
 
-import prisma from "@/lib/prisma"; // Adjust the import according to your setup
-import { parsePdfFromUrl } from "./processPdfFile";
-
-async function processPdf(job: any) {
-  const { projectId } = job?.data;
-  console.log("Job details = ", job);
-  console.log("ProjectId = ", job.data.projectId);
-
-  // Fetch project details from database
-  const project = await prisma.project.findUnique({
-    where: { id: projectId },
-  });
-
-  if (!project) {
-    console.error(`Project with ID ${projectId} not found`);
-    return;
-  }
-
-  const { pdfUrl } = project;
-
-  // Parse PDF using the URL
-  let parsedText;
-  try {
-    parsedText = await parsePdfFromUrl(pdfUrl);
-    console.log("Parsed Data = ", parsedText);
-  } catch (error) {
-    console.error(`Failed to parse PDF from URL: ${pdfUrl}`, error);
-    return;
-  }
-
-  // Generate embeddings using the parsed text
-  //   let embeddings;
-  //   try {
-  //     embeddings = await generateEmbeddings(parsedText);
-  //   } catch (error) {
-  //     console.error(
-  //       `Failed to generate embeddings for project ${projectId}`,
-  //       error
-  //     );
-  //     return;
-  //   }
-
-  // ... (Optional) Store embeddings in a database
-
-  console.log(
-    `Processed PDF for project ${projectId} and generated embeddings`
-  );
-}
+import { extractDataFromPdf } from "./extractDataFromPdf";
+import { deleteFileFromDisk } from "./deleteFileFromDisk";
 
 const pdfProcessingQueue = new Queue("pdf-processing", {
   connection: {
@@ -58,8 +12,15 @@ const pdfProcessingQueue = new Queue("pdf-processing", {
 
 const worker = new Worker(
   "pdf-processing",
-  async (job) => {
-    await processPdf(job);
+  async (job: any) => {
+    const { projectId, filePath } = await job.data;
+
+    // Read the PDF file and extract text
+    console.log("Hello from bull -mq node");
+    console.log("projectId = ", projectId, "filePath = ", filePath);
+
+    const extractedText = await extractDataFromPdf(filePath);
+    console.log("Extracted pdf text = ", extractedText);
   },
   {
     connection: {
@@ -69,19 +30,22 @@ const worker = new Worker(
   }
 );
 
-worker.on("completed", (job) => {
+worker.on("completed", async (job) => {
   console.log(`Job ${job.id} (process pdf) completed successfully!`);
+
+  // Deleting the file from disk
+  await deleteFileFromDisk(job.data.filePath);
 });
 
 worker.on("failed", (job: any, error) => {
   console.error(`Job ${job.id} (process pdf) failed:`, error);
 });
 
-export async function addJobToQueue(projectId: string) {
-  await pdfProcessingQueue.add("process pdf files", { projectId });
+export async function addJobToQueue(projectId: string, filePath: string) {
+  await pdfProcessingQueue.add("process pdf files", { projectId, filePath });
 }
 
-async function generateEmbeddings(text: string): Promise<any> {
-  // Implement your embedding generation logic here
-  return []; // Return generated embeddings
-}
+// async function generateEmbeddings(text: string): Promise<any> {
+//   // Implement your embedding generation logic here
+//   return []; // Return generated embeddings
+// }

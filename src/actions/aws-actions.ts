@@ -11,8 +11,8 @@ const s3Client = new S3Client({
 
 // Upload the pdf file from local server to S3 bucket
 export async function uploadFileToS3(filepath: string) {
-  const fileBuffer = await fs.readFile(`public/${filepath}`);
-  console.log("file Buffer = ", fileBuffer);
+  const fileBuffer = await fs.readFile(filepath);
+  // console.log("file Buffer = ", fileBuffer);
 
   const fileName = filepath.split("/").pop();
 
