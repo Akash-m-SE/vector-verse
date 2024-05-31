@@ -1,6 +1,6 @@
-import React from "react";
+"use client";
 
-const myprojects = () => {
+const myprojects = async () => {
   return <div>myprojects</div>;
 };
 

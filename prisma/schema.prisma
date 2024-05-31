@@ -80,7 +80,7 @@ model Project {
   description String
   pdfName     String //Name of the pdf
   pdfUrl      String //URL of the file uploaded in aws s3 bucket
-  status      ProjectStatus
+  status      ProjectStatus? 
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

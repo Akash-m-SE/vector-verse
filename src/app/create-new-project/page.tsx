@@ -65,7 +65,7 @@ const ProfileForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       // event.preventDefault();
-      console.log("Submitted Values form frontend are = ", values);
+      // console.log("Submitted Values form frontend are = ", values);
       // TODO: push it to backend to be processed by bull worker
 
       // const response = await axios.post("/api/create-new-project", values);

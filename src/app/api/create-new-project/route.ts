@@ -1,18 +1,26 @@
 import mime from "mime";
 import { join } from "path";
-import { stat, mkdir, writeFile, readdir, rmdir } from "fs/promises";
+import { stat, mkdir, readdir, rmdir } from "fs/promises";
 import * as dateFn from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { uploadFileToS3 } from "@/actions/aws-actions";
 import fs from "fs/promises";
 import path from "path";
 import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { addJobToQueue } from "@/actions/bullmq-actions";
+import { extractDataFromPdf } from "@/actions/extractDataFromPdf";
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    // console.log("Server Session = ", session);
+    // console.log("Server Session database id = ", session?.user?.sub);
+
     // Accessing the incoming request items from formData from request
     const formData = await request.formData();
-    console.log("shadcn form values = ", formData);
+    // console.log("shadcn form values = ", formData);
 
     const title = formData.get("title");
     const description = formData.get("description");
@@ -54,6 +62,35 @@ export async function POST(request: NextRequest) {
     }
     // console.log("Name of the pdf file = ", response.fileName);
     // console.log("URL of the pdf file = ", response.objectURL);
+    const { fileName, objectURL } = response;
+
+    // TODO: Add Database functionality to create a new PROJECT entry with the title, description, objectURL and fileName
+    const responseFromProject = await prisma.project.create({
+      data: {
+        title: title as string,
+        description: description as string,
+        pdfName: fileName as string,
+        pdfUrl: objectURL as string,
+        userId: session?.user?.sub,
+      },
+    });
+
+    console.log("response from project = ", responseFromProject);
+    // Add status of pdf file to database
+
+    // console.log("Project Details = ", responseFromProject);
+
+    // TODO: make the bullmq worker to parse the pdf file
+    // const job = await addJobToQueue(responseFromProject[0].id);
+    // await addJobToQueue(responseFromProject.id);
+
+    // if (!job) {
+    //   console.log("Error while adding job to queue");
+    // }
+
+    // Extract Data from pdf file which is stored in the local server
+    const parsedText = await extractDataFromPdf(filepath);
+    console.log("text from file in route.ts = ", parsedText);
 
     // Deleting the file from server after entry in database
     // const response = true;
@@ -66,8 +103,6 @@ export async function POST(request: NextRequest) {
     // return NextResponse.json({message: "File Uploaded Successfully"}, {status: 200});
 
     // ENd of File Upload
-
-    // TODO: Add Database functionality to create a new PROJECT entry with the title, description, objectURL and fileName
   } catch (error) {
     console.log(error);
     return NextResponse.json(
@@ -113,12 +148,13 @@ async function uploadFileToDisk(file: File) {
     )}-${uniqueSuffix}.${mime.getExtension(file.type)}`;
 
     // writing the file to disk
-    await writeFile(`${uploadDir}/${filename}`, buffer);
+    await fs.writeFile(`${uploadDir}/${filename}`, buffer);
 
     // sending back the response
     const fileUrl = `${relativeUploadDir}/${filename}`;
     // console.log("File path from local directory = ", fileUrl);
     // return NextResponse.json({ fileUrl: `${relativeUploadDir}/${filename}` });
+
     return fileUrl;
   } catch (e) {
     console.error("Error while trying to upload a file\n", e);
@@ -136,7 +172,7 @@ async function deleteFileFromDisk(filePath: string) {
     const absolutePath = path.join(process.cwd(), "public", filePath);
 
     await fs.unlink(absolutePath);
-    console.log("Unlinking Successfull");
+    // console.log("Unlinking Successfull");
 
     const directoryPath = path.dirname(absolutePath); // Get directory path from file path
     const directoryContents = await readdir(directoryPath); // Get directory contents
