@@ -2,6 +2,8 @@ import { Queue, Worker, Job } from "bullmq";
 
 import { extractDataFromPdf } from "./extractDataFromPdf";
 import { deleteFileFromDisk } from "./deleteFileFromDisk";
+import { generateVectorEmbeddings } from "./generateVectorEmbeddings";
+import prisma from "@/lib/prisma";
 
 const pdfProcessingQueue = new Queue("pdf-processing", {
   connection: {
@@ -20,7 +22,10 @@ const worker = new Worker(
     console.log("projectId = ", projectId, "filePath = ", filePath);
 
     const extractedText = await extractDataFromPdf(filePath);
-    console.log("Extracted pdf text = ", extractedText);
+    // console.log("Extracted pdf text = ", extractedText);
+
+    // Generating the vector embeddings and storing them in database
+    await generateVectorEmbeddings(extractedText, projectId);
   },
   {
     connection: {
@@ -44,8 +49,3 @@ worker.on("failed", (job: any, error) => {
 export async function addJobToQueue(projectId: string, filePath: string) {
   await pdfProcessingQueue.add("process pdf files", { projectId, filePath });
 }
-
-// async function generateEmbeddings(text: string): Promise<any> {
-//   // Implement your embedding generation logic here
-//   return []; // Return generated embeddings
-// }

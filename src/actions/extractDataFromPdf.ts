@@ -27,6 +27,10 @@ async function extract(fileUrl: string): Promise<string> {
       pdfParser.on("pdfParser_dataReady", () => {
         const parsedText = (pdfParser as any).getRawTextContent();
         // console.log("Parsed Text =", parsedText, typeof parsedText);
+
+        // Writing the parsed text to a JSON File
+        // let jsonFilePath = fileUrl.replace(".pdf", ".json");
+        // fs.writeFile(jsonFilePath, JSON.stringify({ content: parsedText }));
         resolve(parsedText);
       });
 

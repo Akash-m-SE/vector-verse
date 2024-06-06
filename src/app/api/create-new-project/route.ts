@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { addJobToQueue } from "@/actions/bullmq-actions";
 import { uploadFileToDisk } from "@/actions/uploadFileToDisk";
-import { deleteFileFromDisk } from "@/actions/deleteFileFromDisk";
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,6 +66,7 @@ export async function POST(request: NextRequest) {
         description: description as string,
         pdfName: fileName as string,
         pdfUrl: objectURL as string,
+        status: "CREATING",
         userId: session?.user?.sub,
       },
     });
@@ -76,13 +76,8 @@ export async function POST(request: NextRequest) {
 
     // console.log("Project Details = ", responseFromProject);
 
-    // TODO: make the bullmq worker to parse the pdf file
-    // const job = await addJobToQueue(responseFromProject[0].id);
-    // await addJobToQueue(responseFromProject.id);
-
     // Send filepath of projectId and stored file to bull mq worker
-    await addJobToQueue(responseFromProject.id, filepath);
-    // await addJobToQueue("1214314", filepath);
+    await addJobToQueue(responseFromProject.id, filepath); //correct one
 
     return NextResponse.json({ fileUrl: filepath });
     // TODO:- return json with message

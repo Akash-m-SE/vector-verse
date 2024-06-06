@@ -3,6 +3,20 @@
 import { Cards } from "@/components/Cards";
 import { useSession } from "next-auth/react";
 
+export const Links = [
+  {
+    title: "New Project",
+    description:
+      "Create a new project to start asking questions about your pdf",
+    link: "/create-new-project",
+  },
+  {
+    title: "Dashboard",
+    description: "Take a detailed view of all the projects you have created!",
+    link: "/dashboard",
+  },
+];
+
 export default function Home() {
   const user = useSession();
   console.log(user);
