@@ -19,10 +19,10 @@ export const Links = [
 
 export default function Home() {
   const user = useSession();
-  console.log(user);
+  // console.log(user);
 
-  //@ts-ignore
-  // const userId = user?.data?.user?.sub;
+  // @ts-ignore
+  const userId = user?.data?.user?.sub;
   // console.log("User Database Id = ", userId);
 
   return (
