@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -48,6 +49,8 @@ const formSchema = z.object({
 
 const ProfileForm = () => {
   const { toast } = useToast();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   const initialValues = {
     title: "",
@@ -64,11 +67,10 @@ const ProfileForm = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // event.preventDefault();
+      setIsLoading(true);
       // console.log("Submitted Values form frontend are = ", values);
       // TODO: push it to backend to be processed by bull worker
 
-      // const response = await axios.post("/api/create-new-project", values);
       const response = await axios.post("/api/create-new-project", values, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -78,7 +80,7 @@ const ProfileForm = () => {
       if (response) {
         toast({
           title: "Success!!",
-          description: "Project Creation Successfull!!",
+          description: "Your Project is being created right now!!",
         });
 
         console.log("Response from backend = ", response);
@@ -86,10 +88,14 @@ const ProfileForm = () => {
           "Response from backend for file path = ",
           response.data.fileUrl
         );
-        // TODO: accept message from backend not the file path
 
         // TODO: reset the form
-        // form.reset(initialValues);
+        form.reset(initialValues);
+
+        // Redirecting the user to the dashboard
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 2000);
       }
     } catch (error: any) {
       console.log(
@@ -101,12 +107,19 @@ const ProfileForm = () => {
         title: "Uh Oh! Something went wrong!",
         description: error.message,
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
+  const handleResetForm = (e: any) => {
+    e.preventDefault();
+    form.reset(initialValues);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center p-5 m-10 gap-5 h-full">
-      <div>
+      <div className="flex w-auto items-center justify-between">
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
           Create Your Project
         </h1>
@@ -168,7 +181,13 @@ const ProfileForm = () => {
             )}
           />
 
-          <Button type="submit">Submit</Button>
+          <div className="flex items-center justify-between">
+            <Button type="submit">Submit</Button>
+
+            <Button disabled={!isLoading} onClick={(e) => handleResetForm(e)}>
+              Reset Form
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

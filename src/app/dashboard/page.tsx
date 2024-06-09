@@ -2,29 +2,36 @@
 
 import { EmptyState } from "@/components/EmptyState";
 import React, { useEffect, useState } from "react";
-import { getData } from "../payments/page";
-import { DataTable } from "../payments/data-table";
-import { columns } from "../payments/columns";
+import { DataTable } from "../DashboardUI/data-table";
+import { columns } from "../DashboardUI/columns";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { toast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const Dashboard = () => {
   const [projects, setProjects] = useState([]);
+  const session = useSession();
 
   useEffect(() => {
     const fetchProjects = async () => {
-      try {
-        const response = await getData();
+      if (session.status === "authenticated") {
+        try {
+          const response = await axios.get("/api/dashboard");
+          const { data } = response.data;
 
-        //@ts-ignore
-        setProjects(response);
+          //@ts-ignore
+          setProjects(data);
 
-        console.log("response from get data function = ", response);
-      } catch (error) {
-        console.log("Error fetching projects", error);
+          // console.log("response from get data function = ", response);
+        } catch (error) {
+          console.log("Error fetching projects", error);
+        }
       }
     };
 
     fetchProjects();
-  }, []);
+  }, [session]);
 
   // useEffect(() => {
   //   console.log("Use state projects = ", projects);

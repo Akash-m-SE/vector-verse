@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Router } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -25,13 +26,19 @@ export type Projects = {
   userId?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  redirectLink?: string;
 };
 
 enum ProjectStatus {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  COMPLETED = "COMPLETED",
+  CREATING,
+  CREATED,
+  FAILED,
 }
+
+const cleanPdfName = (pdfName: string) => {
+  const regex = /-\d+-\d+\.[^.]+$/;
+  return pdfName.replace(regex, "");
+};
 
 export const columns: ColumnDef<Projects>[] = [
   {
@@ -40,7 +47,6 @@ export const columns: ColumnDef<Projects>[] = [
   },
   {
     accessorKey: "pdfName",
-    // header: "Pdf Name",
     header: ({ column }) => {
       return (
         <Button
@@ -52,10 +58,14 @@ export const columns: ColumnDef<Projects>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const pdfName: string = row.getValue("pdfName");
+      const cleanedPdfName = cleanPdfName(pdfName);
+      return <div>{cleanedPdfName}</div>;
+    },
   },
   {
     accessorKey: "status",
-    // header: "Status",
     header: ({ column }) => {
       return (
         <Button
@@ -67,17 +77,59 @@ export const columns: ColumnDef<Projects>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const status: string = row.getValue("status");
+
+      const statusClass =
+        status === "CREATING"
+          ? "text-blue-500"
+          : status === "CREATED"
+          ? "text-green-500"
+          : status === "FAILED"
+          ? "text-red-500"
+          : "";
+      return <div className={statusClass}>{status}</div>;
+    },
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const createdAt = row.getValue("createdAt");
+      const formattedDate = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        //@ts-ignore
+      }).format(new Date(createdAt));
+
+      return <div>{formattedDate}</div>;
+    },
   },
   {
-    accessorKey: "view",
+    accessorKey: "redirectLink",
     header: "View",
+    cell: ({ row }) => {
+      return (
+        <Button asChild>
+          <Link href={row.getValue("redirectLink")}>View Project</Link>
+        </Button>
+      );
+    },
   },
   {
     id: "actions",
+    header: "Actions",
     cell: ({ row }) => {
       const payment = row.original;
 

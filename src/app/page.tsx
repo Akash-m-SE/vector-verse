@@ -3,7 +3,7 @@
 import { Cards } from "@/components/Cards";
 import { useSession } from "next-auth/react";
 
-export const Links = [
+const Links = [
   {
     title: "New Project",
     description:
@@ -30,7 +30,7 @@ export default function Home() {
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         Welcome To Your Home Page
       </h2>
-      <Cards />
+      <Cards redirectLinks={Links} />
     </main>
   );
 }

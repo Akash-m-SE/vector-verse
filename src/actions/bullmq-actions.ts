@@ -40,10 +40,30 @@ worker.on("completed", async (job) => {
 
   // Deleting the file from disk
   await deleteFileFromDisk(job.data.filePath);
+
+  // Updating the project status in database
+  await prisma.project.update({
+    where: {
+      id: job.data.projectId,
+    },
+    data: {
+      status: "CREATED",
+    },
+  });
 });
 
-worker.on("failed", (job: any, error) => {
+worker.on("failed", async (job: any, error) => {
   console.error(`Job ${job.id} (process pdf) failed:`, error);
+
+  // Updating the project status to be failed in the database
+  await prisma.project.update({
+    where: {
+      id: job.data.projectId,
+    },
+    data: {
+      status: "FAILED",
+    },
+  });
 });
 
 export async function addJobToQueue(projectId: string, filePath: string) {

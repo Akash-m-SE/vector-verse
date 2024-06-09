@@ -18,9 +18,24 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    console.log("Projects = ", projects);
+    // console.log("Projects = ", projects);
+
+    if (!projects) {
+      return NextResponse.json(
+        { messaage: "No projects found" },
+        { status: 400 }
+      );
+    }
+
+    const modifiedProjects = projects.map((project) => ({
+      ...project,
+      redirectLink: `/dashboard/${project.id}`,
+    }));
+
+    // console.log("Modified projects = ", modifiedProjects);
+
     return NextResponse.json(
-      { data: projects, message: "projects fetched successfully!" },
+      { data: modifiedProjects, message: "projects fetched successfully!" },
       { status: 200 }
     );
   } catch (error) {

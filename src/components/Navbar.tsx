@@ -7,9 +7,19 @@ import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
+  const session = useSession();
+  // console.log("Session Details = ", session);
+
+  let loggedInUserPicture = "https://github.com/shadcn.png";
+
+  if (session.status === "authenticated") {
+    //@ts-ignore
+    loggedInUserPicture = session?.data?.user?.picture;
+  }
+
   return (
     <div className="text-white bg-slate-900 h-20 p-4 flex justify-between sticky top-0 opacity-95 ">
       <div id="navbar-icon" className="w-1/3">
@@ -23,14 +33,16 @@ const Navbar = () => {
         className="flex p-2 gap-5 w-1/3 items-center justify-center"
       >
         <Link href={"/"}>Home</Link>
-        <Link href={"/"}>About</Link>
-        <Link href={"/"}>Contact</Link>
+        <Link href={"/dashboard"}>Dashboard</Link>
       </div>
 
       <div id="navbar-avatar" className="m-2 gap-5 flex w-1/3 justify-end">
         <div>
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage
+              //@ts-ignore
+              src={loggedInUserPicture}
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
