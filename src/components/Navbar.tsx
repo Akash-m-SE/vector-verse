@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../../public/logo.png";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
@@ -16,8 +16,8 @@ const Navbar = () => {
   let loggedInUserPicture = "https://github.com/shadcn.png";
 
   if (session.status === "authenticated") {
-    //@ts-ignore
-    loggedInUserPicture = session?.data?.user?.picture;
+    // @ts-ignore
+    loggedInUserPicture = session.data.user.picture;
   }
 
   return (

@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // console.log("Response from AWS = ", response);
     // console.log("Name of the pdf file = ", response.fileName);
     // console.log("URL of the pdf file = ", response.objectURL);
     const { fileName, objectURL } = response;
