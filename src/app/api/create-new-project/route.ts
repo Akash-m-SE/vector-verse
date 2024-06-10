@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: "File blob is required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     if (!filepath) {
       return NextResponse.json(
         { error: "Failed to upload the pdf file in the server." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     if (!response) {
       return NextResponse.json(
         { error: "Failed to upload the pdf file in the AWS S3 Bucket." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     console.log(error);
     return NextResponse.json(
       { error: "Something went wrong while creating the project" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

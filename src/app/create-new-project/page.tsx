@@ -86,7 +86,7 @@ const ProfileForm = () => {
         console.log("Response from backend = ", response);
         console.log(
           "Response from backend for file path = ",
-          response.data.fileUrl
+          response.data.fileUrl,
         );
 
         // TODO: reset the form
@@ -100,7 +100,7 @@ const ProfileForm = () => {
     } catch (error: any) {
       console.log(
         "Something went wrong while posting the values to backend =",
-        error
+        error,
       );
       toast({
         variant: "destructive",

@@ -12,7 +12,7 @@ export async function uploadFileToDisk(file: File) {
   //structuring the directory name and the path where the file will be stored in the server
   const relativeUploadDir = `public/uploads/${dateFn.format(
     Date.now(),
-    "dd-MM-y"
+    "dd-MM-y",
   )}`;
   const uploadDir = join(process.cwd(), relativeUploadDir);
   // console.log("relativeUploadDir", relativeUploadDir, "uploadDir", uploadDir);
@@ -25,7 +25,7 @@ export async function uploadFileToDisk(file: File) {
     } else {
       console.error(
         "Error while trying to create directory when uploading a file\n",
-        e
+        e,
       );
       // return NextResponse.json(
       //   { error: "Something went wrong." },
@@ -40,7 +40,7 @@ export async function uploadFileToDisk(file: File) {
 
     const filename = `${file.name.replace(
       /\.[^/.]+$/,
-      ""
+      "",
     )}-${uniqueSuffix}.${mime.getExtension(file.type)}`;
 
     // writing the file to disk

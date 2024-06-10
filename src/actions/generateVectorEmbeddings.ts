@@ -6,7 +6,7 @@ import { createId } from "@paralleldrive/cuid2";
 
 export async function generateVectorEmbeddings(
   text: string,
-  projectId: string
+  projectId: string,
 ) {
   try {
     // Splitting the text into chunks
@@ -37,14 +37,14 @@ export async function generateVectorEmbeddings(
 
       if (!vectorEmbedding || vectorEmbedding.length === 0) {
         throw new Error(
-          `Embedding array is empty or null for chunk: ${chunkText}`
+          `Embedding array is empty or null for chunk: ${chunkText}`,
         );
       }
 
       const embedding = pgvector.toSql(vectorEmbedding);
       if (!embedding) {
         throw new Error(
-          `pgvector.toSql returned null for embedding: ${vectorEmbedding}`
+          `pgvector.toSql returned null for embedding: ${vectorEmbedding}`,
         );
       }
 
@@ -72,7 +72,7 @@ export async function generateVectorEmbeddings(
         id,
         chunkText,
         embedding,
-        projectId
+        projectId,
       );
 
       // const response =

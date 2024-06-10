@@ -84,10 +84,10 @@ export const columns: ColumnDef<Projects>[] = [
         status === "CREATING"
           ? "text-blue-500"
           : status === "CREATED"
-          ? "text-green-500"
-          : status === "FAILED"
-          ? "text-red-500"
-          : "";
+            ? "text-green-500"
+            : status === "FAILED"
+              ? "text-red-500"
+              : "";
       return <div className={statusClass}>{status}</div>;
     },
   },
