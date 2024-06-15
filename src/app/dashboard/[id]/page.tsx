@@ -28,15 +28,15 @@ const ChatInterface = ({ params }: any) => {
 
   return (
     <>
-      <div className="flex h-full">
+      <div className="flex h-full gap-2">
         <div
           id="PdfViewer"
-          className="w-1/2 flex items-center justify-center min-h-screen"
+          className="w-1/2 flex items-center justify-center min-h-[80vh]"
         >
           <PdfViewer pdfUrl={pdfUrl} />
         </div>
-        <div id="ChatInterface" className="w-1/2">
-          <Chat />
+        <div id="Chat Component" className="w-1/2">
+          <Chat id={id} />
         </div>
       </div>
     </>

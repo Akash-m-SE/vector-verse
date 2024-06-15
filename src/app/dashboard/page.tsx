@@ -23,6 +23,8 @@ const Dashboard = () => {
           //@ts-ignore
           setProjects(data);
 
+          // console.log("Project list = ", data);
+
           // console.log("response from get data function = ", response);
         } catch (error) {
           console.log("Error fetching projects", error);
@@ -31,7 +33,7 @@ const Dashboard = () => {
     };
 
     fetchProjects();
-  }, [session]);
+  }, []);
 
   // useEffect(() => {
   //   console.log("Use state projects = ", projects);

@@ -21,7 +21,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="text-white bg-slate-900 h-20 p-4 flex justify-between sticky top-0 opacity-95 ">
+    <div className="text-white bg-slate-900 h-20 p-4 flex justify-between sticky top-0 opacity-85 ">
       <div id="navbar-icon" className="w-1/3">
         <Link href={"/"}>
           <Image src={logo} alt="logo" height={50} width={50} />
