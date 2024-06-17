@@ -2,7 +2,7 @@ import { Queue, Worker, Job } from "bullmq";
 
 import { extractDataFromPdf } from "./extractDataFromPdf";
 import { deleteFileFromDisk } from "./deleteFileFromDisk";
-import { generateVectorEmbeddings } from "./generateVectorEmbeddings";
+import { generateVectorEmbeddingsAndStoreThemInDB } from "./vectorEmbeddings";
 import prisma from "@/lib/prisma";
 
 const pdfProcessingQueue = new Queue("pdf-processing", {
@@ -25,14 +25,14 @@ const worker = new Worker(
     // console.log("Extracted pdf text = ", extractedText);
 
     // Generating the vector embeddings and storing them in database
-    await generateVectorEmbeddings(extractedText, projectId);
+    await generateVectorEmbeddingsAndStoreThemInDB(extractedText, projectId);
   },
   {
     connection: {
       host: process.env.REDIS_HOST || "localhost",
       port: Number(process.env.REDIS_PORT) || 6379,
     },
-  },
+  }
 );
 
 worker.on("completed", async (job) => {

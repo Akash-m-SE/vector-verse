@@ -1,3 +1,4 @@
+import { generateVectorEmbeddings } from "@/actions/vectorEmbeddings";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -44,6 +45,10 @@ export async function POST(
 
     const { question } = body;
     console.log("Question = ", question);
+
+    const embeddedQuestion = await generateVectorEmbeddings(question);
+
+    // console.log("Embedded Question = ", embeddedQuestion);
 
     //TODO :- change question into embedding get the nearest embeddings from database and send both of the embeddings to llm to get the answer
 

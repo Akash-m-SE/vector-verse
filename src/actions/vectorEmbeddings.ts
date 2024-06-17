@@ -4,9 +4,9 @@ const use = require("@tensorflow-models/universal-sentence-encoder");
 import pgvector from "pgvector";
 import { createId } from "@paralleldrive/cuid2";
 
-export async function generateVectorEmbeddings(
+export async function generateVectorEmbeddingsAndStoreThemInDB(
   text: string,
-  projectId: string,
+  projectId: string
 ) {
   try {
     // Splitting the text into chunks
@@ -18,13 +18,16 @@ export async function generateVectorEmbeddings(
 
     // console.log("Chunks = ", chunks);
 
-    const model = await use.load();
+    // const model = await use.load();
 
     const embeddings = [];
 
     for (const chunk of chunks) {
-      const chunkEmbeddings = await model.embed(chunk);
-      embeddings.push(Array.from(chunkEmbeddings.dataSync()));
+      // const chunkEmbeddings = await model.embed(chunk);
+      // embeddings.push(Array.from(chunkEmbeddings.dataSync()));
+      const chunkEmbeddings = await generateVectorEmbeddings(chunk);
+
+      embeddings.push(chunkEmbeddings);
     }
 
     // console.log("Embeddings Array = ", embeddings);
@@ -37,14 +40,14 @@ export async function generateVectorEmbeddings(
 
       if (!vectorEmbedding || vectorEmbedding.length === 0) {
         throw new Error(
-          `Embedding array is empty or null for chunk: ${chunkText}`,
+          `Embedding array is empty or null for chunk: ${chunkText}`
         );
       }
 
-      const embedding = pgvector.toSql(vectorEmbedding);
+      const embedding = pgvector.toSql(vectorEmbedding.flat());
       if (!embedding) {
         throw new Error(
-          `pgvector.toSql returned null for embedding: ${vectorEmbedding}`,
+          `pgvector.toSql returned null for embedding: ${vectorEmbedding}`
         );
       }
 
@@ -72,7 +75,7 @@ export async function generateVectorEmbeddings(
         id,
         chunkText,
         embedding,
-        projectId,
+        projectId
       );
 
       // const response =
@@ -86,6 +89,23 @@ export async function generateVectorEmbeddings(
     console.log("Embeddings pushed to database successfully!");
   } catch (error) {
     console.error("Error while generating vector embeddings", error);
+    throw new Error();
+  }
+}
+
+export async function generateVectorEmbeddings(data: string) {
+  try {
+    const model = await use.load();
+
+    const embeddedData = await model.embed(data);
+
+    const embeddedDataArrayFormat = Array.from(embeddedData.arraySync()).flat();
+
+    console.log("Embedded Data = ", embeddedDataArrayFormat);
+
+    return embeddedDataArrayFormat;
+  } catch (error) {
+    console.log("Error while generating vector embeddings", error);
     throw new Error();
   }
 }

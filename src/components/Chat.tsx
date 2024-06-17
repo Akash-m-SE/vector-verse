@@ -20,18 +20,6 @@ const Chat = ({ id }: { id: string }) => {
 
   // console.log("ProjectId = ", id);
 
-  const handleClick: any = (e: any) => {
-    e.preventDefault();
-    if (question.length === 0) return;
-
-    // @ts-ignore
-    setMessages([...messages, question]);
-
-    const response = axios.post(`/api/dashboard/${id}`, { question });
-
-    console.log("Response = ", response);
-  };
-
   // Function to scroll the Messages div to the bottom after updates
   const scrollToBottom = () => {
     const messagesDiv = document.getElementById("Messages");
@@ -50,6 +38,18 @@ const Chat = ({ id }: { id: string }) => {
     setMessages(dummyMessages);
   }, [messages]);
 
+  const handleClick: any = (e: any) => {
+    e.preventDefault();
+    if (question.length === 0) return;
+
+    // @ts-ignore
+    setMessages([...messages, question]);
+
+    const response = axios.post(`/api/dashboard/${id}`, { question });
+
+    console.log("Response = ", response);
+  };
+
   return (
     <div className="flex flex-col p-2 min-h-[90vh]">
       <div
@@ -57,7 +57,7 @@ const Chat = ({ id }: { id: string }) => {
         className="flex-grow overflow-y-auto min-h-[80vh] max-h-[80vh]"
       >
         {messages.map((message: any) => (
-          <div className="w-full p-2">
+          <div className="w-full p-2" key={message.id}>
             {/* For User */}
             {message.role === "USER" && (
               <div className="w-full flex flex-row justify-end">
