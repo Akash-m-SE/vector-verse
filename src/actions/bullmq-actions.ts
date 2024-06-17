@@ -32,7 +32,7 @@ const worker = new Worker(
       host: process.env.REDIS_HOST || "localhost",
       port: Number(process.env.REDIS_PORT) || 6379,
     },
-  }
+  },
 );
 
 worker.on("completed", async (job) => {
