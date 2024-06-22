@@ -33,7 +33,7 @@ const Dashboard = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, [session.status]);
 
   // useEffect(() => {
   //   console.log("Use state projects = ", projects);

@@ -120,9 +120,12 @@ export const columns: ColumnDef<Projects>[] = [
     accessorKey: "redirectLink",
     header: "View",
     cell: ({ row }) => {
+      const projectStatus: string = row.getValue("status");
+      const redirectLink: string = row.getValue("redirectLink");
+
       return (
-        <Button asChild>
-          <Link href={row.getValue("redirectLink")}>View Project</Link>
+        <Button disabled={projectStatus !== "CREATED" ? true : false}>
+          <Link href={redirectLink}>View Project</Link>
         </Button>
       );
     },
