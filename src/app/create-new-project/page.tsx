@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -51,6 +52,7 @@ const ProfileForm = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const session = useSession();
 
   const initialValues = {
     title: "",
@@ -69,7 +71,15 @@ const ProfileForm = () => {
     try {
       setIsLoading(true);
       // console.log("Submitted Values form frontend are = ", values);
-      // TODO: push it to backend to be processed by bull worker
+
+      if (session.status === "unauthenticated") {
+        toast({
+          variant: "destructive",
+          title: "Cannot create new project!",
+          description: "Please login to create new project.",
+        });
+        return;
+      }
 
       const response = await axios.post("/api/create-new-project", values, {
         headers: {
@@ -86,10 +96,9 @@ const ProfileForm = () => {
         console.log("Response from backend = ", response);
         console.log(
           "Response from backend for file path = ",
-          response.data.fileUrl
+          response.data.fileUrl,
         );
 
-        // TODO: reset the form
         form.reset(initialValues);
 
         // Redirecting the user to the dashboard
@@ -100,7 +109,7 @@ const ProfileForm = () => {
     } catch (error: any) {
       console.log(
         "Something went wrong while posting the values to backend =",
-        error
+        error,
       );
       toast({
         variant: "destructive",

@@ -20,19 +20,13 @@ export async function POST(request: NextRequest) {
     const title = formData.get("title");
     const description = formData.get("description");
     const file = formData.get("file[]") as File | null;
+
     if (!file) {
       return NextResponse.json(
         { error: "File blob is required." },
         { status: 400 },
       );
     }
-
-    // Successfully working
-    // console.log("title = ", title);
-    // console.log("description = ", description);
-    // console.log("uploaded file blob = ", file);
-    // console.log("uploaded file blob name = ", file.name);
-    // console.log("uploaded file name = ", file.);
 
     // Uploading the file to Server to be saved locally
     const filepath = await uploadFileToDisk(file);
@@ -56,12 +50,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // console.log("Response from AWS = ", response);
-    // console.log("Name of the pdf file = ", response.fileName);
-    // console.log("URL of the pdf file = ", response.objectURL);
     const { fileName, objectURL } = response;
 
-    // TODO: Add Database functionality to create a new PROJECT entry with the title, description, objectURL and fileName
     const responseFromProject = await prisma.project.create({
       data: {
         title: title as string,
@@ -73,19 +63,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // console.log("response from project = ", responseFromProject);
-    // Add status of pdf file to database
-
-    // console.log("Project Details = ", responseFromProject);
-
-    // Send filepath of projectId and stored file to bull mq worker
-    await addJobToQueue(responseFromProject.id, filepath); //correct one
+    // Sending filepath of stored file and projectId to bull mq worker
+    await addJobToQueue(responseFromProject.id, filepath);
 
     return NextResponse.json({ fileUrl: filepath });
     // TODO:- return json with message
     // return NextResponse.json({message: "File Uploaded Successfully"}, {status: 200});
-
-    // ENd of File Upload
   } catch (error) {
     console.log(error);
     return NextResponse.json(

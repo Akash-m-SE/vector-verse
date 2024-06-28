@@ -27,7 +27,7 @@ export async function uploadFileToS3(filepath: string) {
 
   try {
     const response = await s3Client.send(command);
-    console.log("File uploaded successfully to AWS S3 bucket:", response);
+    // console.log("File uploaded successfully to AWS S3 bucket:", response);
     // return response;
 
     // returning object url so that it can be used to read and access the pdf file
@@ -38,7 +38,5 @@ export async function uploadFileToS3(filepath: string) {
     throw error;
   }
 }
-
-// TODO: Fetch the file from S3 bucket
 
 // TODO: Delete the file from S3 bucket
