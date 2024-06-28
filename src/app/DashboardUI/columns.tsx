@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -38,6 +40,45 @@ enum ProjectStatus {
 const cleanPdfName = (pdfName: string) => {
   const regex = /-\d+-\d+\.[^.]+$/;
   return pdfName.replace(regex, "");
+};
+
+const DeleteProjectButton = ({ id }: { id: any }) => {
+  const { toast } = useToast();
+
+  const deleteProject = async (id: any) => {
+    try {
+      const response = await axios.delete(`/api/dashboard/${id}`);
+
+      if (response.status === 200) {
+        toast({
+          description: response.data.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Failed to delete project.",
+      });
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel></DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => deleteProject(id)}>
+          Delete Project
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 };
 
 export const columns: ColumnDef<Projects>[] = [
@@ -134,27 +175,9 @@ export const columns: ColumnDef<Projects>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const id = row.original.id;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel></DropdownMenuLabel>
-            <DropdownMenuItem
-            // Add Delete Project from database, along with delete item from s3 bucket
-            // onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Delete Project
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <DeleteProjectButton id={id} />;
     },
   },
 ];

@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import fs from "fs/promises";
 
 const s3Client = new S3Client({
@@ -39,4 +43,17 @@ export async function uploadFileToS3(filepath: string) {
   }
 }
 
-// TODO: Delete the file from S3 bucket
+// Delete the file from S3 bucket
+export async function deleteFileFromS3(fileName: string) {
+  const command = new DeleteObjectCommand({
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: fileName,
+  });
+
+  try {
+    const response = await s3Client.send(command);
+    // console.log("response after deleting from S3 = ", response);
+  } catch (error) {
+    throw new Error("Error while deleting object from S3");
+  }
+}

@@ -6,10 +6,11 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { ChatGroq } from "@langchain/groq";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import { CustomRetriever } from "@/actions/customRetriever";
+import { deleteFileFromS3 } from "@/actions/aws-actions";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } },
+  context: { params: { id: string } }
 ) {
   try {
     const { id } = context.params;
@@ -28,19 +29,19 @@ export async function GET(
         projectId: id,
         message: "Successfully fetched your project",
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong while fetching your project." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } },
+  context: { params: { id: string } }
 ) {
   try {
     const { id } = context.params;
@@ -101,7 +102,58 @@ export async function POST(
     console.log("Error = ", error);
     return NextResponse.json(
       { error: "Something went wrong" },
-      { status: 500 },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
+  try {
+    const { id } = context.params;
+
+    const project = await prisma.project.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    // console.log("Project Details = ", project);
+
+    if (!project) {
+      return NextResponse.json(
+        { message: "Project not found" },
+        { status: 400 }
+      );
+    }
+
+    // Delete from AWS S3
+    await deleteFileFromS3(project.pdfName);
+
+    // Delete Vector Embeddings containing projectId = id
+    await prisma.vectorEmbedding.deleteMany({
+      where: {
+        projectId: id,
+      },
+    });
+
+    // Delete project from Projects table containing id = id
+    await prisma.project.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Successfully deleted the project" },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Error while deleting the project" },
+      { status: 500 }
     );
   }
 }

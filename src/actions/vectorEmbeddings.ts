@@ -1,11 +1,15 @@
 import prisma from "@/lib/prisma";
-require("@tensorflow/tfjs");
-// const use = require("@tensorflow-models/universal-sentence-encoder");
+// require("@tensorflow/tfjs");
+import "@tensorflow/tfjs";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
 import pgvector from "pgvector";
 import { createId } from "@paralleldrive/cuid2";
 import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import * as tf from "@tensorflow/tfjs";
+
+// Suppressing TensorFlow.js logs
+tf.env().set("PROD", true);
 
 // Text Cleanup for clean chunk text storage
 function cleanText(text: string) {
