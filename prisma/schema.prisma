@@ -60,46 +60,46 @@ model VerificationToken {
 }
 
 model Project {
-  id               String            @id @default(cuid())
-  title            String
-  description      String
-  pdfName          String
-  pdfUrl           String
-  status           ProjectStatus?
-  
-  userId           String
-  user             User              @relation(fields: [userId], references: [id])
-  
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  pdfName     String
+  pdfUrl      String
+  status      ProjectStatus?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   messages         Message[]
   vectorEmbeddings VectorEmbedding[]
 }
 
 model VectorEmbedding {
-  id        String                     @id @default(cuid())
+  id        String                      @id @default(cuid())
   chunkText String
   embedding Unsupported("vector(512)")?
-  
+
   projectId String
-  project   Project                @relation(fields: [projectId], references: [id])
-  
-  createdAt DateTime               @default(now())
-  updatedAt DateTime               @updatedAt
+  project   Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
-  content   String
-  role      Role
-  
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  
+  id      String @id @default(cuid())
+  content String
+  role    Role
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
   projectId String
-  project   Project  @relation(fields: [projectId], references: [id])
-  
+  project   Project @relation(fields: [projectId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

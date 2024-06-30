@@ -1,12 +1,9 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
-import { ChatGroq } from "@langchain/groq";
-import { createRetrievalChain } from "langchain/chains/retrieval";
-import { CustomRetriever } from "@/actions/customRetriever";
 import { deleteFileFromS3 } from "@/actions/aws-actions";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { questionAnswerChain } from "@/actions/langchain-actions";
 
 export async function GET(
   request: NextRequest,
@@ -44,58 +41,52 @@ export async function POST(
   context: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    const userId = session.user.sub;
     const { id } = context.params;
     // console.log("Id = ", id);
 
     const body = await request.json();
 
     const { question } = body;
-    console.log("Question = ", question);
+    // console.log("Question = ", question);
 
-    // Instantiate the model
-    const model = new ChatGroq({
-      model: "mixtral-8x7b-32768",
-      temperature: 0,
+    // Fetching the Chat History
+    const chatHistory = await prisma.message.findMany({
+      where: {
+        projectId: id,
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
-    const systemTemplate = [
-      `You are an assistant for question-answering tasks. `,
-      `Use the following pieces of retrieved context to answer `,
-      `the question. If you don't know the answer, say that you `,
-      `don't know. Use three sentences maximum and keep the `,
-      `answer concise.`,
-      `\n\n`,
-      `{context}`,
-    ].join("");
+    // Question Answer Chain with Context
+    const response = await questionAnswerChain(id, question, chatHistory);
 
-    const prompt = ChatPromptTemplate.fromMessages([
-      ["system", systemTemplate],
-      ["human", "{input}"],
-    ]);
+    // console.log("Response from route = ", response);
 
-    const questionAnswerChain = await createStuffDocumentsChain({
-      llm: model,
-      prompt,
+    const responseContent =
+      typeof response === "string" ? response : JSON.stringify(response);
+
+    await prisma.message.create({
+      data: {
+        content: question,
+        role: "USER",
+        userId: userId,
+        projectId: id,
+      },
     });
 
-    // Custom Retriever Class
-    const retriever = new CustomRetriever(id);
-
-    const ragChain = await createRetrievalChain({
-      retriever,
-      combineDocsChain: questionAnswerChain,
+    await prisma.message.create({
+      data: {
+        content: responseContent,
+        role: "AI",
+        userId: userId,
+        projectId: id,
+      },
     });
-
-    // Ask a question
-    const results = await ragChain.invoke({
-      input: question,
-    });
-
-    console.log("Result from RAG Chain = ", results);
-
-    //TODO:- Add chat history to a question-answering chain for context
-
-    //TODO: - Add Database functionality to add user's question and the AI's answer
 
     return NextResponse.json({ message: "Success" }, { status: 200 });
   } catch (error) {
@@ -134,6 +125,13 @@ export async function DELETE(
 
     // Delete Vector Embeddings containing projectId = id
     await prisma.vectorEmbedding.deleteMany({
+      where: {
+        projectId: id,
+      },
+    });
+
+    // Deleting from Message Table
+    await prisma.message.deleteMany({
       where: {
         projectId: id,
       },

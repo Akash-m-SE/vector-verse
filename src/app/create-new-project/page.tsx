@@ -93,12 +93,6 @@ const ProfileForm = () => {
           description: "Your Project is being created right now!!",
         });
 
-        console.log("Response from backend = ", response);
-        console.log(
-          "Response from backend for file path = ",
-          response.data.fileUrl,
-        );
-
         form.reset(initialValues);
 
         // Redirecting the user to the dashboard
@@ -109,7 +103,7 @@ const ProfileForm = () => {
     } catch (error: any) {
       console.log(
         "Something went wrong while posting the values to backend =",
-        error,
+        error
       );
       toast({
         variant: "destructive",

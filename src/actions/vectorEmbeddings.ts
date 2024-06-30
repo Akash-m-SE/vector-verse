@@ -7,6 +7,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import * as tf from "@tensorflow/tfjs";
+import { textSplitter } from "./langchain-actions";
 
 // Suppressing TensorFlow.js logs
 tf.env().set("PROD", true);
@@ -39,20 +40,10 @@ export async function generateVectorEmbeddings(data: string) {
 
 export async function generateVectorEmbeddingsAndStoreThemInDB(
   text: string,
-  projectId: string,
+  projectId: string
 ) {
   try {
-    // Converting the extracted text into document
-    const doc = new Document({ pageContent: text });
-    // console.log("Document Object from split function = ", doc);
-
-    const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1000,
-      chunkOverlap: 200,
-    });
-
-    const splits = await textSplitter.splitDocuments([doc]); //splitting the chunks
-    console.log("Splits = ", splits);
+    const splits = await textSplitter(text);
 
     const chunks: string[] = [];
 
@@ -87,14 +78,14 @@ export async function generateVectorEmbeddingsAndStoreThemInDB(
 
       if (!vectorEmbedding || vectorEmbedding.length === 0) {
         throw new Error(
-          `Embedding array is empty or null for chunk: ${chunkText}`,
+          `Embedding array is empty or null for chunk: ${chunkText}`
         );
       }
 
       const embedding = pgvector.toSql(vectorEmbedding.flat());
       if (!embedding) {
         throw new Error(
-          `pgvector.toSql returned null for embedding: ${vectorEmbedding}`,
+          `pgvector.toSql returned null for embedding: ${vectorEmbedding}`
         );
       }
 
@@ -116,7 +107,7 @@ export async function generateVectorEmbeddingsAndStoreThemInDB(
         id,
         chunkText,
         embedding,
-        projectId,
+        projectId
       );
 
       console.log("Response from database = ", response);
