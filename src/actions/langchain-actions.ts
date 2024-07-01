@@ -13,9 +13,6 @@ import {
   RunnableSequence,
 } from "@langchain/core/runnables";
 import { formatDocumentsAsString } from "langchain/util/document";
-import * as tf from "@tensorflow/tfjs-node";
-
-tf.env().set("IS_NODE", false);
 
 export async function textSplitter(text: string) {
   // Converting the extracted text into document
@@ -57,7 +54,6 @@ const contextualizeQPrompt = ChatPromptTemplate.fromMessages([
   new MessagesPlaceholder("chat_history"),
   ["human", "{question}"],
 ]);
-
 
 export async function questionAnswerChain(
   id: string,

@@ -51,7 +51,7 @@ const formSchema = z.object({
 const ProfileForm = () => {
   const { toast } = useToast();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const session = useSession();
 
   const initialValues = {
@@ -90,7 +90,7 @@ const ProfileForm = () => {
       if (response) {
         toast({
           title: "Success!!",
-          description: "Your Project is being created right now!!",
+          description: response.data.message,
         });
 
         form.reset(initialValues);
@@ -185,7 +185,7 @@ const ProfileForm = () => {
           />
 
           <div className="flex items-center justify-between">
-            <Button type="submit" disabled={!isLoading}>
+            <Button type="submit" disabled={isLoading}>
               Submit
             </Button>
 

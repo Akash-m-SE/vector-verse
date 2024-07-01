@@ -10,52 +10,76 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { EmptyMessageState } from "./EmptyState";
 
 const Chat = ({ id }: { id: string }) => {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const session = useSession();
   //@ts-ignore
   const userPicture = session?.data?.user?.picture;
-
-  // console.log("ProjectId = ", id);
 
   // Function to scroll the Messages div to the bottom after updates
   const scrollToBottom = () => {
     const messagesDiv = document.getElementById("Messages");
     if (messagesDiv) {
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      messagesDiv.scrollTo({
+        top: messagesDiv.scrollHeight,
+        behavior: "smooth",
+      });
     }
   };
 
-  // Call scrollToBottom on messages update and component mount
   useEffect(() => {
     scrollToBottom();
   }, [messages]); // Dependency array: update only when messages change
 
   useEffect(() => {
-    // @ts-ignore
-    setMessages(dummyMessages);
-  }, [messages]);
+    const fetchConversation = async () => {
+      const response = await axios.get(`/api/dashboard/${id}/conversation`);
 
-  const handleClick: any = (e: any) => {
-    e.preventDefault();
-    if (question.length === 0) return;
+      // console.log("Response = ", response);
 
-    // @ts-ignore
-    setMessages([...messages, question]);
+      setMessages(response.data.messages);
+    };
 
-    const response = axios.post(`/api/dashboard/${id}`, { question });
+    fetchConversation();
+  }, [setMessages, id]);
 
-    console.log("Response = ", response);
+  const handleClick = async (e: any) => {
+    try {
+      setIsLoading(true);
+      e.preventDefault();
+
+      console.log("button clicked");
+
+      if (question.length === 0) return;
+
+      const response = await axios.post(`/api/dashboard/${id}`, { question });
+
+      console.log("Response = ", response);
+
+      const { userMessage, aiMessage } = response.data;
+
+      //@ts-ignore
+      setMessages([...messages, userMessage, aiMessage]);
+    } catch (error) {
+      console.log("Error while posting messages", error);
+    } finally {
+      setQuestion("");
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="flex flex-col p-2 min-h-[90vh]">
       <div
         id="Messages"
-        className="flex-grow overflow-y-auto min-h-[80vh] max-h-[80vh]"
+        className={`${messages.length === 0 && "flex flex-col"} flex-grow overflow-y-auto min-h-[80vh] max-h-[80vh] items-center justify-center`}
       >
+        {messages.length === 0 && <EmptyMessageState />}
+
         {messages.map((message: any) => (
           <div className="w-full p-2" key={message.id}>
             {/* For User */}
@@ -63,9 +87,9 @@ const Chat = ({ id }: { id: string }) => {
               <div className="w-full flex flex-row justify-end">
                 <div
                   key={message.id}
-                  className={`h-auto w-auto rounded-lg p-2 m-2 flex justify-end`}
+                  className={`h-auto w-auto rounded-lg p-2 m-2 flex justify-end text`}
                 >
-                  USER = {message.content}
+                  {message.content}
                 </div>
                 <Avatar>
                   <AvatarImage
@@ -86,20 +110,25 @@ const Chat = ({ id }: { id: string }) => {
                   key={message.id}
                   className={`h-auto w-auto rounded-lg p-2 m-2 flex justify-start`}
                 >
-                  AI = {message.content}
+                  {message.content}
                 </div>
               </div>
             )}
           </div>
         ))}
       </div>
+
       <div id="Message-Box" className="flex w-full gap-2">
         <Textarea
           placeholder="Type your message here."
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
         />
-        <Button className="h-full" onClick={(e) => handleClick(e)}>
+        <Button
+          className="h-full"
+          disabled={isLoading}
+          onClick={(e) => handleClick(e)}
+        >
           Send Message
         </Button>
       </div>

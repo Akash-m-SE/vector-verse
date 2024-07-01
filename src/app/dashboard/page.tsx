@@ -1,13 +1,11 @@
 "use client";
 
-import { EmptyState } from "@/components/EmptyState";
 import React, { useEffect, useState } from "react";
 import { DataTable } from "../DashboardUI/data-table";
 import { columns } from "../DashboardUI/columns";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { toast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+import { EmptyDashboardState } from "@/components/EmptyState";
 
 const Dashboard = () => {
   const [projects, setProjects] = useState([]);
@@ -40,7 +38,7 @@ const Dashboard = () => {
   // }, [projects]);
 
   if (projects.length === 0) {
-    return <EmptyState />;
+    return <EmptyDashboardState />;
   }
 
   return (

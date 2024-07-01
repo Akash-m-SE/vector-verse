@@ -16,14 +16,14 @@ export async function GET(
       where: {
         id: id,
       },
+      select: {
+        pdfUrl: true,
+      },
     });
-
-    // console.log("Project Details = ", project);
 
     return NextResponse.json(
       {
-        project: project,
-        projectId: id,
+        pdfUrl: project?.pdfUrl,
         message: "Successfully fetched your project",
       },
       { status: 200 }
@@ -70,25 +70,42 @@ export async function POST(
     const responseContent =
       typeof response === "string" ? response : JSON.stringify(response);
 
-    await prisma.message.create({
+    const userMessage = await prisma.message.create({
       data: {
         content: question,
         role: "USER",
         userId: userId,
         projectId: id,
       },
+      select: {
+        content: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
-    await prisma.message.create({
+    const aiMessage = await prisma.message.create({
       data: {
         content: responseContent,
         role: "AI",
         userId: userId,
         projectId: id,
       },
+      select: {
+        content: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
-    return NextResponse.json({ message: "Success" }, { status: 200 });
+    // console.log("user messages = ", userMessage, " ai message = ", aiMessage);
+
+    return NextResponse.json(
+      { message: "Success", userMessage: userMessage, aiMessage: aiMessage },
+      { status: 200 }
+    );
   } catch (error) {
     console.log("Error = ", error);
     return NextResponse.json(

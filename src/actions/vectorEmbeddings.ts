@@ -1,11 +1,9 @@
 import prisma from "@/lib/prisma";
-// require("@tensorflow/tfjs");
 import "@tensorflow/tfjs";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
 import pgvector from "pgvector";
 import { createId } from "@paralleldrive/cuid2";
-import { Document } from "@langchain/core/documents";
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+
 import * as tf from "@tensorflow/tfjs";
 import { textSplitter } from "./langchain-actions";
 

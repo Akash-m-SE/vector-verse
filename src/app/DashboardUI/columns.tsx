@@ -84,7 +84,9 @@ const DeleteProjectButton = ({ id }: { id: any }) => {
 export const columns: ColumnDef<Projects>[] = [
   {
     accessorKey: "title",
-    header: "Title",
+    header: ({ column }) => {
+      return <div className="font-bold">Title</div>;
+    },
   },
   {
     accessorKey: "pdfName",
@@ -93,6 +95,7 @@ export const columns: ColumnDef<Projects>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="font-bold"
         >
           Pdf Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -109,13 +112,16 @@ export const columns: ColumnDef<Projects>[] = [
     accessorKey: "status",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Status
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex items-center justify-center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="font-bold"
+          >
+            Status
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       );
     },
     cell: ({ row }) => {
@@ -123,26 +129,33 @@ export const columns: ColumnDef<Projects>[] = [
 
       const statusClass =
         status === "CREATING"
-          ? "text-blue-500"
+          ? "text-blue-500 font-bold"
           : status === "CREATED"
-            ? "text-green-500"
+            ? "text-green-500 font-bold"
             : status === "FAILED"
-              ? "text-red-500"
+              ? "text-red-500 font-bold"
               : "";
-      return <div className={statusClass}>{status}</div>;
+      return (
+        <div className="flex items-center justify-center">
+          <div className={statusClass}>{status}</div>
+        </div>
+      );
     },
   },
   {
     accessorKey: "createdAt",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Created At
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex items-center justify-center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="font-bold"
+          >
+            Created At
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       );
     },
     cell: ({ row }) => {
@@ -154,30 +167,49 @@ export const columns: ColumnDef<Projects>[] = [
         //@ts-ignore
       }).format(new Date(createdAt));
 
-      return <div>{formattedDate}</div>;
+      return (
+        <div className="flex items-center justify-center">{formattedDate}</div>
+      );
     },
   },
   {
     accessorKey: "redirectLink",
-    header: "View",
+    header: ({ column }) => {
+      return (
+        <div className="font-bold flex items-center justify-center">View</div>
+      );
+    },
     cell: ({ row }) => {
       const projectStatus: string = row.getValue("status");
       const redirectLink: string = row.getValue("redirectLink");
 
       return (
-        <Button disabled={projectStatus !== "CREATED" ? true : false}>
-          <Link href={redirectLink}>View Project</Link>
-        </Button>
+        <div className="flex items-center justify-center">
+          <Button disabled={projectStatus !== "CREATED" ? true : false}>
+            <Link href={redirectLink}>View Project</Link>
+          </Button>
+        </div>
       );
     },
   },
   {
     id: "actions",
-    header: "Actions",
+    // header: "Actions",
+    header: ({ column }) => {
+      return (
+        <div className="font-bold flex items-center justify-center">
+          Actions
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const id = row.original.id;
 
-      return <DeleteProjectButton id={id} />;
+      return (
+        <div className="flex items-center justify-center">
+          <DeleteProjectButton id={id} />
+        </div>
+      );
     },
   },
 ];
