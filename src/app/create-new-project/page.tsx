@@ -103,7 +103,7 @@ const ProfileForm = () => {
     } catch (error: any) {
       console.log(
         "Something went wrong while posting the values to backend =",
-        error
+        error,
       );
       toast({
         variant: "destructive",

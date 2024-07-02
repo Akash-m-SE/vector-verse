@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Fetch Conversation History
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: { id: string } },
 ) {
   try {
     const { id } = context.params;
@@ -31,12 +31,12 @@ export async function GET(
         messages: messages,
         message: "Successfully fetched the conversation",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong while fetching your conversation." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

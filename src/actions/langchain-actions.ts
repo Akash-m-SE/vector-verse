@@ -58,13 +58,13 @@ const contextualizeQPrompt = ChatPromptTemplate.fromMessages([
 export async function questionAnswerChain(
   id: string,
   question: string,
-  chatHistory: any
+  chatHistory: any,
 ) {
   // Formatting the chat history for question contextualization
   const formattedChatHistory = chatHistory.map((item: any) =>
     item.role === "USER"
       ? new HumanMessage(item.content)
-      : new AIMessage(item.content)
+      : new AIMessage(item.content),
   );
   // console.log("Formatted Chat History = ", formattedChatHistory);
 

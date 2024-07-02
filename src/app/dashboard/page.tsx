@@ -31,11 +31,11 @@ const Dashboard = () => {
     };
 
     fetchProjects();
-  }, [session.status]);
 
-  // useEffect(() => {
-  //   console.log("Use state projects = ", projects);
-  // }, [projects]);
+    const interval = setInterval(fetchProjects, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [session.status]);
 
   if (projects.length === 0) {
     return <EmptyDashboardState />;

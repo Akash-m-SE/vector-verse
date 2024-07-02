@@ -69,4 +69,3 @@ worker.on("failed", async (job: any, error) => {
 export async function addJobToQueue(projectId: string, filePath: string) {
   await pdfProcessingQueue.add("process pdf files", { projectId, filePath });
 }
-

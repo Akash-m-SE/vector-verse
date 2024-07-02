@@ -7,7 +7,7 @@ import { questionAnswerChain } from "@/actions/langchain-actions";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: { id: string } },
 ) {
   try {
     const { id } = context.params;
@@ -26,19 +26,19 @@ export async function GET(
         pdfUrl: project?.pdfUrl,
         message: "Successfully fetched your project",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong while fetching your project." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: { id: string } },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -104,20 +104,20 @@ export async function POST(
 
     return NextResponse.json(
       { message: "Success", userMessage: userMessage, aiMessage: aiMessage },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error = ", error);
     return NextResponse.json(
       { error: "Something went wrong" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: { id: string } },
 ) {
   try {
     const { id } = context.params;
@@ -133,7 +133,7 @@ export async function DELETE(
     if (!project) {
       return NextResponse.json(
         { message: "Project not found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -163,12 +163,12 @@ export async function DELETE(
 
     return NextResponse.json(
       { message: "Successfully deleted the project" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { error: "Error while deleting the project" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
