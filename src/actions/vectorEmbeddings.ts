@@ -69,7 +69,7 @@ export async function generateVectorEmbeddingsAndStoreThemInDB(
     // console.log("Chunk Array = ", chunks);
     // console.log("Embeddings Array = ", embeddings);
 
-    // Looping throught the chunk and embedding array and storing them in database
+    // Looping through the chunks and embedding array and storing them in database
     for (let i = 0; i < chunks.length; i++) {
       const chunkText: string = chunks[i];
       const vectorEmbedding: any = embeddings[i];

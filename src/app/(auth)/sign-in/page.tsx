@@ -10,17 +10,48 @@ import { LampContainer } from "../../../components/ui/lamp";
 const page = () => {
   return (
     <>
-      <LampContainer className="h-full">
-        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl light:text-white">
-          Sign In With Your Credentials
-        </h1>
-        <Button
-          className="mt-10 w-[10vw] h-[5vh] flex items-center justify-center font-semibold"
-          onClick={() => signIn("google")}
+      <LampContainer>
+        <motion.h1
+          initial={{ opacity: 0.5, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.3,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl m-10"
         >
-          <FcGoogle className="mr-3 w-full" />
-          <span className="light:text-white">Sign In With Google</span>
-        </Button>
+          Welcome to Vector Verse
+        </motion.h1>
+        <motion.h2
+          initial={{ opacity: 0.5, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.5,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"
+        >
+          Sign In With Your Credentials
+        </motion.h2>
+        <motion.div
+          initial={{ opacity: 0.5, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.7,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+        >
+          <Button
+            className="mt-10 w-[10vw] h-[5vh] flex items-center justify-center font-semibold"
+            onClick={() => signIn("google")}
+          >
+            <FcGoogle className="mr-3 w-full" />
+            <span className="light:text-white">Sign In With Google</span>
+          </Button>
+        </motion.div>
       </LampContainer>
     </>
   );

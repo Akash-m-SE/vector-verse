@@ -27,10 +27,7 @@ export async function uploadFileToDisk(file: File) {
         "Error while trying to create directory when uploading a file\n",
         e,
       );
-      // return NextResponse.json(
-      //   { error: "Something went wrong." },
-      //   { status: 500 }
-      // );
+
       return;
     }
   }
@@ -54,10 +51,7 @@ export async function uploadFileToDisk(file: File) {
     return fileUrl;
   } catch (e) {
     console.error("Error while trying to upload a file\n", e);
-    // return NextResponse.json(
-    //   { error: "Something went wrong." },
-    //   { status: 500 }
-    // );
+
     return;
   }
 }

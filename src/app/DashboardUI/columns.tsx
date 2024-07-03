@@ -159,12 +159,11 @@ export const columns: ColumnDef<Projects>[] = [
       );
     },
     cell: ({ row }) => {
-      const createdAt = row.getValue("createdAt");
+      const createdAt: Date = row.getValue("createdAt");
       const formattedDate = new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         month: "long",
         day: "2-digit",
-        //@ts-ignore
       }).format(new Date(createdAt));
 
       return (
@@ -183,9 +182,11 @@ export const columns: ColumnDef<Projects>[] = [
       const projectStatus: string = row.getValue("status");
       const redirectLink: string = row.getValue("redirectLink");
 
+      const disabled = projectStatus !== "CREATED" ? true : false;
+
       return (
         <div className="flex items-center justify-center">
-          <Button disabled={projectStatus !== "CREATED" ? true : false}>
+          <Button asChild={!disabled} disabled={disabled}>
             <Link href={redirectLink}>View Project</Link>
           </Button>
         </div>

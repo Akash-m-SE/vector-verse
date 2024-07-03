@@ -21,6 +21,7 @@ import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Loading from "./loading";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -52,6 +53,7 @@ const ProfileForm = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
   const session = useSession();
 
   const initialValues = {
@@ -68,24 +70,27 @@ const ProfileForm = () => {
   const fileRef = form.register("file");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (session.status === "unauthenticated") {
+      toast({
+        variant: "destructive",
+        title: "Cannot create new project!",
+        description: "Please login to create new project.",
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
       // console.log("Submitted Values form frontend are = ", values);
-
-      if (session.status === "unauthenticated") {
-        toast({
-          variant: "destructive",
-          title: "Cannot create new project!",
-          description: "Please login to create new project.",
-        });
-        return;
-      }
+      setIsComponentMounted(true);
 
       const response = await axios.post("/api/create-new-project", values, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+
+      setIsComponentMounted(false);
 
       if (response) {
         toast({
@@ -112,6 +117,7 @@ const ProfileForm = () => {
       });
     } finally {
       setIsLoading(false);
+      setIsComponentMounted(false);
     }
   }
 
@@ -121,81 +127,84 @@ const ProfileForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-5 m-10 gap-5 h-full">
-      <div className="flex w-auto items-center justify-between">
-        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-          Create Your Project
-        </h1>
+    <>
+      {isComponentMounted && <Loading />}
+      <div className="flex flex-col items-center justify-center p-5 m-10 gap-5 h-full">
+        <div className="flex w-auto items-center justify-between">
+          <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+            Create Your Project
+          </h1>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {/* Title of the project*/}
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Description of the project*/}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Description for your project"
+                      {...field}
+                      className="w-[50vw] min-h-[30vh]"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Upload PDF File */}
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Upload Your PDF File</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      placeholder="pdf-file"
+                      accept="application/pdf"
+                      {...fileRef}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex items-center justify-between">
+              <Button type="submit" disabled={isLoading}>
+                Submit
+              </Button>
+
+              <Button disabled={isLoading} onClick={(e) => handleResetForm(e)}>
+                Reset Form
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Title of the project*/}
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Title" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Description of the project*/}
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Description for your project"
-                    {...field}
-                    className="w-[50vw] min-h-[30vh]"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Upload PDF File */}
-          <FormField
-            control={form.control}
-            name="file"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Upload Your PDF File</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    placeholder="pdf-file"
-                    accept="application/pdf"
-                    {...fileRef}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="flex items-center justify-between">
-            <Button type="submit" disabled={isLoading}>
-              Submit
-            </Button>
-
-            <Button disabled={!isLoading} onClick={(e) => handleResetForm(e)}>
-              Reset Form
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+    </>
   );
 };
 
