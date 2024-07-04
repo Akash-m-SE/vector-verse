@@ -6,6 +6,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { addJobToQueue } from "@/actions/bullmq-actions";
 import { uploadFileToDisk } from "@/actions/uploadFileToDisk";
+import { ProjectType } from "@/types";
+import { ProjectStatus } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,13 +54,13 @@ export async function POST(request: NextRequest) {
 
     const { fileName, objectURL } = response;
 
-    const responseFromProject = await prisma.project.create({
+    const responseFromProject: ProjectType = await prisma.project.create({
       data: {
         title: title as string,
         description: description as string,
         pdfName: fileName as string,
         pdfUrl: objectURL as string,
-        status: "CREATING",
+        status: ProjectStatus.CREATING,
         userId: session?.user?.sub,
       },
     });

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Router } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,37 +15,22 @@ import {
 import Link from "next/link";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
-
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Projects = {
-  id?: string;
-  title?: string;
-  description?: string;
-  pdfName?: string;
-  pdfUrl?: string;
-  status?: ProjectStatus;
-  userId?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  redirectLink?: string;
-};
-
-enum ProjectStatus {
-  CREATING,
-  CREATED,
-  FAILED,
-}
+import { ProjectStatus } from "@prisma/client";
+import { ProjectsTableType } from "@/types";
 
 const cleanPdfName = (pdfName: string) => {
   const regex = /-\d+-\d+\.[^.]+$/;
   return pdfName.replace(regex, "");
 };
 
-const DeleteProjectButton = ({ id }: { id: any }) => {
+interface DeleteProjectButtonType {
+  id: string | undefined;
+}
+
+const DeleteProjectButton: React.FC<DeleteProjectButtonType> = ({ id }) => {
   const { toast } = useToast();
 
-  const deleteProject = async (id: any) => {
+  const deleteProject = async (id: string | undefined) => {
     try {
       const response = await axios.delete(`/api/dashboard/${id}`);
 
@@ -81,7 +66,7 @@ const DeleteProjectButton = ({ id }: { id: any }) => {
   );
 };
 
-export const columns: ColumnDef<Projects>[] = [
+export const columns: ColumnDef<ProjectsTableType>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => {
@@ -128,11 +113,11 @@ export const columns: ColumnDef<Projects>[] = [
       const status: string = row.getValue("status");
 
       const statusClass =
-        status === "CREATING"
+        status === ProjectStatus.CREATING
           ? "text-blue-500 font-bold"
-          : status === "CREATED"
+          : status === ProjectStatus.CREATED
             ? "text-green-500 font-bold"
-            : status === "FAILED"
+            : status === ProjectStatus.FAILED
               ? "text-red-500 font-bold"
               : "";
       return (
@@ -182,7 +167,7 @@ export const columns: ColumnDef<Projects>[] = [
       const projectStatus: string = row.getValue("status");
       const redirectLink: string = row.getValue("redirectLink");
 
-      const disabled = projectStatus !== "CREATED" ? true : false;
+      const disabled = projectStatus !== ProjectStatus.CREATED ? true : false;
 
       return (
         <div className="flex items-center justify-center">

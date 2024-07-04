@@ -6,6 +6,18 @@ import prisma from "@/lib/prisma";
 
 export interface CustomRetrieverInput extends BaseRetrieverInput {}
 
+type similarVectorsDataType = {
+  id: string;
+  chunkText: string;
+  embedding: number[];
+}[];
+
+type individualVectorDataType = {
+  id: string;
+  chunkText: string;
+  embedding: number[];
+};
+
 export class CustomRetriever extends BaseRetriever {
   lc_namespace = ["langchain", "retrievers"];
 
@@ -24,22 +36,23 @@ export class CustomRetriever extends BaseRetriever {
 
     const embeddingQuestionStr = `[${embeddedQuestion.join(",")}]`;
 
-    const similarVectorsData: any = await prisma.$queryRawUnsafe(
-      `
+    const similarVectorsData: similarVectorsDataType =
+      await prisma.$queryRawUnsafe(
+        `
         SELECT "id", "chunkText", "embedding" <-> $1::vector AS distance
         FROM "VectorEmbedding"
         WHERE "projectId" = $2
         ORDER BY distance ASC
         LIMIT 10
         `,
-      embeddingQuestionStr,
-      this.projectId,
-    );
+        embeddingQuestionStr,
+        this.projectId,
+      );
 
     // console.log("Similar vector data = ", similarVectorsData);
 
     return similarVectorsData.map(
-      (item: any) =>
+      (item: individualVectorDataType) =>
         new Document({
           pageContent: item.chunkText,
           metadata: {},

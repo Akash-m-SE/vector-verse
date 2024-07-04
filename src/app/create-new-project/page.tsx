@@ -49,7 +49,7 @@ const formSchema = z.object({
   // file: typeof window === "undefined" ? z.any() : z.instanceof(FileList),
 });
 
-const ProfileForm = () => {
+const ProfileForm: React.FC = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);

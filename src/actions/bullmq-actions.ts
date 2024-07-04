@@ -4,6 +4,7 @@ import { extractDataFromPdf } from "./extractDataFromPdf";
 import { deleteFileFromDisk } from "./deleteFileFromDisk";
 import { generateVectorEmbeddingsAndStoreThemInDB } from "./vectorEmbeddings";
 import prisma from "@/lib/prisma";
+import { ProjectStatus } from "@prisma/client";
 
 const pdfProcessingQueue = new Queue("pdf-processing", {
   connection: {
@@ -21,7 +22,7 @@ const worker = new Worker(
     console.log("Hello from bull -mq node");
     console.log("projectId = ", projectId, "filePath = ", filePath);
 
-    const extractedText = await extractDataFromPdf(filePath);
+    const extractedText: string = await extractDataFromPdf(filePath);
     // console.log("Extracted pdf text = ", extractedText);
 
     // Generating the vector embeddings and storing them in database
@@ -47,7 +48,7 @@ worker.on("completed", async (job) => {
       id: job.data.projectId,
     },
     data: {
-      status: "CREATED",
+      status: ProjectStatus.CREATED,
     },
   });
 });
@@ -61,7 +62,7 @@ worker.on("failed", async (job: any, error) => {
       id: job.data.projectId,
     },
     data: {
-      status: "FAILED",
+      status: ProjectStatus.FAILED,
     },
   });
 });

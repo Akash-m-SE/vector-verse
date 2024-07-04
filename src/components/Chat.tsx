@@ -10,8 +10,14 @@ import axios from "axios";
 import { EmptyMessageState } from "./EmptyState";
 import ChatSkeletonLoader from "./ChatSkeletonLoader";
 import Loading from "@/app/dashboard/loading";
+import { Role } from "@prisma/client";
+import { MessagesType } from "@/types";
 
-const Chat = ({ id }: { id: string }) => {
+interface ChatType {
+  id: string;
+}
+
+const Chat: React.FC<ChatType> = ({ id }) => {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -88,10 +94,10 @@ const Chat = ({ id }: { id: string }) => {
             </>
           ) : (
             <>
-              {messages.map((message: any) => (
+              {messages.map((message: MessagesType) => (
                 <div className="w-full p-2" key={message.id}>
                   {/* For User */}
-                  {message.role === "USER" && (
+                  {message.role === Role.USER && (
                     <div className="w-full flex flex-row justify-end">
                       <div
                         key={message.id}
@@ -109,7 +115,7 @@ const Chat = ({ id }: { id: string }) => {
                   )}
 
                   {/* For AI */}
-                  {message.role === "AI" && (
+                  {message.role === Role.AI && (
                     <div className="flex flex-row w-full">
                       <Avatar>
                         <AvatarImage src="https://github.com/shadcn.png" />

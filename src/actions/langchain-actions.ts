@@ -13,6 +13,8 @@ import {
   RunnableSequence,
 } from "@langchain/core/runnables";
 import { formatDocumentsAsString } from "langchain/util/document";
+import { Role } from "@prisma/client";
+import { ChatHistoryType, IndividualChatHistoryType } from "@/types";
 
 export async function textSplitter(text: string) {
   // Converting the extracted text into document
@@ -58,13 +60,14 @@ const contextualizeQPrompt = ChatPromptTemplate.fromMessages([
 export async function questionAnswerChain(
   id: string,
   question: string,
-  chatHistory: any,
+  chatHistory: ChatHistoryType,
 ) {
   // Formatting the chat history for question contextualization
-  const formattedChatHistory = chatHistory.map((item: any) =>
-    item.role === "USER"
-      ? new HumanMessage(item.content)
-      : new AIMessage(item.content),
+  const formattedChatHistory = chatHistory.map(
+    (item: IndividualChatHistoryType) =>
+      item.role === Role.USER
+        ? new HumanMessage(item.content)
+        : new AIMessage(item.content),
   );
   // console.log("Formatted Chat History = ", formattedChatHistory);
 

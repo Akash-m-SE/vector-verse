@@ -2,8 +2,14 @@ import Chat from "@/components/Chat";
 import PdfViewer from "@/components/PdfViewer";
 import React from "react";
 
-const ChatInterface = ({ params }: any) => {
-  const id = params.id;
+interface ChatInterfaceType {
+  params: {
+    id: string;
+  };
+}
+
+const ChatInterface: React.FC<ChatInterfaceType> = ({ params }) => {
+  const id: string = params.id;
 
   return (
     <>

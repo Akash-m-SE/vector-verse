@@ -1,6 +1,7 @@
 "use client";
 
 import { Cards } from "@/components/Cards";
+import React from "react";
 
 const Links = [
   {

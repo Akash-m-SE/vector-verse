@@ -4,6 +4,8 @@ import { deleteFileFromS3 } from "@/actions/aws-actions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { questionAnswerChain } from "@/actions/langchain-actions";
+import { Role } from "@prisma/client";
+import { ChatHistoryType, MessagesType, ProjectType } from "@/types";
 
 export async function GET(
   request: NextRequest,
@@ -52,7 +54,7 @@ export async function POST(
     // console.log("Question = ", question);
 
     // Fetching the Chat History
-    const chatHistory = await prisma.message.findMany({
+    const chatHistory: ChatHistoryType = await prisma.message.findMany({
       where: {
         projectId: id,
         userId: userId,
@@ -70,33 +72,21 @@ export async function POST(
     const responseContent =
       typeof response === "string" ? response : JSON.stringify(response);
 
-    const userMessage = await prisma.message.create({
+    const userMessage: MessagesType = await prisma.message.create({
       data: {
         content: question,
-        role: "USER",
+        role: Role.USER,
         userId: userId,
         projectId: id,
-      },
-      select: {
-        content: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
 
-    const aiMessage = await prisma.message.create({
+    const aiMessage: MessagesType = await prisma.message.create({
       data: {
         content: responseContent,
-        role: "AI",
+        role: Role.AI,
         userId: userId,
         projectId: id,
-      },
-      select: {
-        content: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
 
@@ -122,7 +112,7 @@ export async function DELETE(
   try {
     const { id } = context.params;
 
-    const project = await prisma.project.findUnique({
+    const project: ProjectType | null = await prisma.project.findUnique({
       where: {
         id: id,
       },

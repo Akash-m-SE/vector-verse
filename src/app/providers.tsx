@@ -4,7 +4,11 @@ import { SessionProvider } from "next-auth/react";
 import React from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const Providers = ({ children }: { children: React.ReactNode }) => {
+interface ProvidersType {
+  children: React.ReactNode;
+}
+
+const Providers: React.FC<ProvidersType> = ({ children }) => {
   return (
     <SessionProvider>
       <ThemeProvider

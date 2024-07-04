@@ -65,7 +65,7 @@ model Project {
   description String
   pdfName     String
   pdfUrl      String
-  status      ProjectStatus?
+  status      ProjectStatus
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

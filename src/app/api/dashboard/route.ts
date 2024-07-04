@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { ProjectsListType, ProjectsTableListType } from "@/types";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     // console.log("Session details from server = ", session);
     // console.log("User Id = ", session.user.sub);
 
-    const projects = await prisma.project.findMany({
+    const projects: ProjectsListType = await prisma.project.findMany({
       where: {
         userId: session?.user?.sub,
       },
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const modifiedProjects = projects.map((project) => ({
+    const modifiedProjects: ProjectsTableListType = projects.map((project) => ({
       ...project,
       redirectLink: `/dashboard/${project.id}`,
     }));

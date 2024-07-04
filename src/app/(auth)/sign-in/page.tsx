@@ -7,7 +7,7 @@ import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 import { LampContainer } from "../../../components/ui/lamp";
 
-const page = () => {
+const page: React.FC = () => {
   return (
     <>
       <LampContainer>

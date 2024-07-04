@@ -2,12 +2,14 @@ import React from "react";
 import { Skeleton } from "./ui/skeleton";
 import { Avatar, AvatarImage } from "./ui/avatar";
 
-const ChatSkeletonLoader = ({
-  loading,
-  className,
-}: {
+interface ChatSkeletonLoaderType {
   loading: boolean;
   className?: string;
+}
+
+const ChatSkeletonLoader: React.FC<ChatSkeletonLoaderType> = ({
+  loading,
+  className,
 }) => {
   if (!loading) return null;
 
@@ -20,9 +22,6 @@ const ChatSkeletonLoader = ({
           </Avatar>
         </div>
         <div id="Skeleton-Container" className="flex flex-col gap-2 m-2">
-          {/* <Skeleton className="w-[15vw] h-[20px] rounded-full" />
-          <Skeleton className="w-[10vw] h-[20px] rounded-full" />
-          <Skeleton className="w-[5vw] h-[20px] rounded-full" /> */}
           <Skeleton className="w-[40vw] h-[20px] rounded-full" />
           <Skeleton className="w-[25vw] h-[20px] rounded-full" />
           <Skeleton className="w-[15vw] h-[20px] rounded-full" />

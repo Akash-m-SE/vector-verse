@@ -46,8 +46,8 @@ export async function generateVectorEmbeddingsAndStoreThemInDB(
     const chunks: string[] = [];
 
     splits.map((item: any) => {
-      const extractedText = item.pageContent;
-      const chunk = cleanText(extractedText); // cleaning up the chunk text
+      const extractedText: string = item.pageContent;
+      const chunk: string = cleanText(extractedText); // cleaning up the chunk text
 
       // only pushing the chunk if it is not empty
       if (chunk.length > 0) {

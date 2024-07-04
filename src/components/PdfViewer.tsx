@@ -4,7 +4,11 @@ import Loading from "@/app/dashboard/loading";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-const PdfViewer = ({ id }: { id: string }) => {
+interface PdfViewerType {
+  id: string;
+}
+
+const PdfViewer: React.FC<PdfViewerType> = ({ id }) => {
   const [pdfUrl, setPdfUrl] = useState("");
   const [isComponentMounted, setIsComponentMounted] = useState(true);
 

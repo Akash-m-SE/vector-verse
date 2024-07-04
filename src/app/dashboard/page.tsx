@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { EmptyDashboardState } from "@/components/EmptyState";
 import Loading from "./loading";
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   const [projects, setProjects] = useState([]);
   const session = useSession();
   const [isComponentMounted, setIsComponentMounted] = useState(true);
