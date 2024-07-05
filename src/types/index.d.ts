@@ -1,5 +1,4 @@
-import { Role } from "@prisma/client";
-import { ProjectStatus } from "@prisma/client";
+import { Role, ProjectStatus } from "@prisma/client";
 
 type IndividualChatHistoryType = {
   id: string;
