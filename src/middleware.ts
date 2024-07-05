@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const isLoggedIn = request.cookies.get("next-auth.session-token");
+  // in dev it is next-auth and in prod it is __Secure-next-auth
+  const isLoggedIn =
+    request.cookies.get("next-auth.session-token") ||
+    request.cookies.get("__Secure-next-auth.session-token");
   const currentPathName = request.nextUrl.pathname;
 
   // Preventing people from manually visiting the sign-in page
