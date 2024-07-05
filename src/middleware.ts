@@ -14,6 +14,8 @@ export function middleware(request: NextRequest) {
   if (!isLoggedIn && currentPathName !== "/sign-in") {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
