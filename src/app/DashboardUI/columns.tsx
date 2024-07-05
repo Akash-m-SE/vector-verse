@@ -17,6 +17,7 @@ import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { ProjectStatus } from "@prisma/client";
 import { ProjectsTableType } from "@/types";
+import { useState } from "react";
 
 const cleanPdfName = (pdfName: string) => {
   const regex = /-\d+-\d+\.[^.]+$/;
@@ -28,10 +29,17 @@ interface DeleteProjectButtonType {
 }
 
 const DeleteProjectButton: React.FC<DeleteProjectButtonType> = ({ id }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const deleteProject = async (id: string | undefined) => {
     try {
+      setIsLoading(true);
+
+      toast({
+        description: "Your Project is being deleted right now!!",
+      });
+
       const response = await axios.delete(`/api/dashboard/${id}`);
 
       if (response.status === 200) {
@@ -45,6 +53,8 @@ const DeleteProjectButton: React.FC<DeleteProjectButtonType> = ({ id }) => {
         title: "Uh oh! Something went wrong.",
         description: "Failed to delete project.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,7 +68,10 @@ const DeleteProjectButton: React.FC<DeleteProjectButtonType> = ({ id }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel></DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => deleteProject(id)}>
+        <DropdownMenuItem
+          disabled={isLoading}
+          onClick={() => deleteProject(id)}
+        >
           Delete Project
         </DropdownMenuItem>
       </DropdownMenuContent>

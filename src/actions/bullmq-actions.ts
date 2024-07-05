@@ -1,4 +1,4 @@
-import { Queue, Worker, Job } from "bullmq";
+import { Queue, Worker } from "bullmq";
 
 import { extractDataFromPdf } from "./extractDataFromPdf";
 import { deleteFileFromDisk } from "./deleteFileFromDisk";
@@ -6,11 +6,14 @@ import { generateVectorEmbeddingsAndStoreThemInDB } from "./vectorEmbeddings";
 import prisma from "@/lib/prisma";
 import { ProjectStatus } from "@prisma/client";
 
+const RedisConnection = {
+  host: String(process.env.REDIS_HOST) || "localhost",
+  port: Number(process.env.REDIS_PORT) || 6379,
+  password: String(process.env.REDIS_PASSWORD) || "",
+};
+
 const pdfProcessingQueue = new Queue("pdf-processing", {
-  connection: {
-    host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT) || 6379,
-  },
+  connection: RedisConnection,
 });
 
 const worker = new Worker(
@@ -29,10 +32,7 @@ const worker = new Worker(
     await generateVectorEmbeddingsAndStoreThemInDB(extractedText, projectId);
   },
   {
-    connection: {
-      host: process.env.REDIS_HOST || "localhost",
-      port: Number(process.env.REDIS_PORT) || 6379,
-    },
+    connection: RedisConnection,
   },
 );
 

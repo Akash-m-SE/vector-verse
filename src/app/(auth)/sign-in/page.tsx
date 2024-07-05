@@ -6,11 +6,30 @@ import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 import { LampContainer } from "../../../components/ui/lamp";
+import logo from "../../../../public/logo.png";
+import Image from "next/image";
 
 const page: React.FC = () => {
   return (
     <>
       <LampContainer>
+        <motion.div
+          initial={{ opacity: 0.5, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.1,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+        >
+          <Image
+            src={logo}
+            alt="Vector Verse Logo"
+            width={200}
+            height={200}
+            className="w-full h-full rounded-lg"
+          />
+        </motion.div>
         <motion.h1
           initial={{ opacity: 0.5, y: 100 }}
           whileInView={{ opacity: 1, y: 0 }}

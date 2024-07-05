@@ -103,7 +103,7 @@ const ProfileForm: React.FC = () => {
         // Redirecting the user to the dashboard
         setTimeout(() => {
           router.push("/dashboard");
-        }, 2000);
+        }, 1500);
       }
     } catch (error: any) {
       console.log(
