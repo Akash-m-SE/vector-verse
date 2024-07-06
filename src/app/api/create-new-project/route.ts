@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadFileToS3 } from "@/actions/aws-actions";
+import { downloadFileFromS3, uploadFileToS3 } from "@/actions/aws-actions";
 
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { addJobToQueue } from "@/actions/bullmq-actions";
-import { uploadFileToDisk } from "@/actions/uploadFileToDisk";
+import {
+  generateUniqueFileName,
+  uploadFileToDisk,
+} from "@/actions/uploadFileToDisk";
 import { ProjectType } from "@/types";
 import { ProjectStatus } from "@prisma/client";
+import { extractDataFromPdf } from "@/actions/extractDataFromPdf";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,19 +35,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Uploading the file to Server to be saved locally
-    const filepath = await uploadFileToDisk(file);
+    // const filepath = await uploadFileToDisk(file);
 
-    if (!filepath) {
-      return NextResponse.json(
-        { error: "Failed to upload the pdf file in the server." },
-        { status: 400 },
-      );
-    }
+    // if (!filepath) {
+    //   return NextResponse.json(
+    //     { error: "Failed to upload the pdf file in the server." },
+    //     { status: 400 },
+    //   );
+    // }
 
-    console.log("file path from function = ", filepath);
+    // console.log("file path from function = ", filepath);
+
+    const uniqueFile = await generateUniqueFileName(file);
+
+    console.log("Unique File Details = ", uniqueFile);
 
     // Uploading the file from Server to S3
-    const response = await uploadFileToS3(filepath);
+    // const response = await uploadFileToS3(filepath);
+    // **upload file to s3
+    const response = await uploadFileToS3(uniqueFile);
 
     if (!response) {
       return NextResponse.json(
@@ -66,7 +76,23 @@ export async function POST(request: NextRequest) {
     });
 
     // Sending filepath of stored file and projectId to bull mq worker
-    await addJobToQueue(responseFromProject.id, filepath);
+    // await addJobToQueue(responseFromProject.id, filepath);
+    // await addJobToQueue(responseFromProject.id);
+
+    // **await downloadFileFromS3(responseFromProject.pdfName)
+    // const fileFromS3 = await downloadFileFromS3(
+    //   "Akash_Maity_Resume-1720180326648-242011262.pdf"
+    // );
+
+    // if (!fileFromS3) {
+    //   console.log("Failed to fetch file from S3");
+    // }
+
+    // **reading the file
+    // await extractDataFromPdf(fileFromS3);
+
+    // **send filename from project table to bull mq worker
+    await addJobToQueue(responseFromProject.id, responseFromProject.pdfName);
 
     return NextResponse.json(
       { message: "Your Project is being created right now!!" },

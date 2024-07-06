@@ -55,3 +55,14 @@ export async function uploadFileToDisk(file: File) {
     return;
   }
 }
+
+export async function generateUniqueFileName(file: File): Promise<File> {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const originalFilename = file.name;
+  const extension = mime.getExtension(file.type) || "";
+
+  const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+  const filename = `${originalFilename.replace(/\.[^/.]+$/, "")}-${uniqueSuffix}.${extension}`;
+
+  return new File([buffer], filename, { type: file.type });
+}
