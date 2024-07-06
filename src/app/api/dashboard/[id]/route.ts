@@ -6,7 +6,6 @@ import { authOptions } from "@/lib/auth";
 import { questionAnswerChain } from "@/actions/langchain-actions";
 import { Role } from "@prisma/client";
 import { ChatHistoryType, MessagesType, ProjectType } from "@/types";
-import { deleteFileFromUploads } from "@/actions/deleteFileFromDisk";
 
 export async function GET(
   request: NextRequest,
@@ -127,9 +126,6 @@ export async function DELETE(
         { status: 400 },
       );
     }
-
-    // Deleting the file if it exists from the local server
-    await deleteFileFromUploads(project.pdfName);
 
     // Delete from AWS S3
     await deleteFileFromS3(project.pdfName);

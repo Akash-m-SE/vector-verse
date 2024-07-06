@@ -3,7 +3,6 @@ import "@tensorflow/tfjs";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
 import pgvector from "pgvector";
 import { createId } from "@paralleldrive/cuid2";
-
 import * as tf from "@tensorflow/tfjs";
 import { textSplitter } from "./langchain-actions";
 
@@ -19,6 +18,7 @@ function cleanText(text: string) {
   return text.trim();
 }
 
+// Generating the vector embeddings using universal-sentence-encoder
 export async function generateVectorEmbeddings(data: string) {
   try {
     const model = await use.load();
@@ -72,7 +72,7 @@ export async function generateVectorEmbeddingsAndStoreThemInDB(
     // Looping through the chunks and embedding array and storing them in database
     for (let i = 0; i < chunks.length; i++) {
       const chunkText: string = chunks[i];
-      const vectorEmbedding: any = embeddings[i];
+      const vectorEmbedding: number[] = embeddings[i];
 
       if (!vectorEmbedding || vectorEmbedding.length === 0) {
         throw new Error(
@@ -109,7 +109,6 @@ export async function generateVectorEmbeddingsAndStoreThemInDB(
       );
 
       console.log("Response from database = ", response);
-
       console.log(`Chunk ${i + 1} pushed into the DB`);
     }
 
