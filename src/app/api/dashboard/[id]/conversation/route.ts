@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import { MessagesType } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
+export const maxDuration = 60;
+
 // Fetch Conversation History
 export async function GET(
   request: NextRequest,

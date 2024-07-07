@@ -10,7 +10,7 @@ import { ProjectType } from "@/types";
 import { ProjectStatus } from "@prisma/client";
 import { generateUniqueFileName } from "@/actions/fileActions";
 
-export const maxDuration = 60; 
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {

@@ -4,6 +4,8 @@ import { ProjectsListType, ProjectsTableListType } from "@/types";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

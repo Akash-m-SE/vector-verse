@@ -7,6 +7,8 @@ import { questionAnswerChain } from "@/actions/langchain-actions";
 import { Role } from "@prisma/client";
 import { ChatHistoryType, MessagesType, ProjectType } from "@/types";
 
+export const maxDuration = 60;
+
 export async function GET(
   request: NextRequest,
   context: { params: { id: string } },
