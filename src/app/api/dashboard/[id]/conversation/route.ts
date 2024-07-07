@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { MessagesType } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 // Fetch Conversation History
@@ -9,18 +10,12 @@ export async function GET(
   try {
     const { id } = context.params;
 
-    const messages = await prisma.message.findMany({
+    const messages: MessagesType[] = await prisma.message.findMany({
       where: {
         projectId: id,
       },
       orderBy: {
         createdAt: "asc",
-      },
-      select: {
-        content: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
 

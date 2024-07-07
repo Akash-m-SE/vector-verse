@@ -19,7 +19,7 @@ interface ChatType {
 
 const Chat: React.FC<ChatType> = ({ id }) => {
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<MessagesType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(true);
   const session = useSession();
@@ -65,8 +65,7 @@ const Chat: React.FC<ChatType> = ({ id }) => {
 
       const { userMessage, aiMessage } = response.data;
 
-      //@ts-ignore
-      setMessages([...messages, userMessage, aiMessage]);
+      setMessages((prevMessages) => [...prevMessages, userMessage, aiMessage]);
     } catch (error) {
       console.log("Error while posting messages", error);
     } finally {
