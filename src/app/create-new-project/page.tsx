@@ -101,9 +101,7 @@ const ProfileForm: React.FC = () => {
         form.reset(initialValues);
 
         // Redirecting the user to the dashboard
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 1500);
+        router.push("/dashboard");
       }
     } catch (error: any) {
       console.log(
