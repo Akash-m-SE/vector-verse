@@ -5,10 +5,16 @@ import prisma from "@/lib/prisma";
 import { ProjectStatus } from "@prisma/client";
 import { downloadFileFromS3 } from "./aws-actions";
 
+// const RedisConnection = {
+//   host: String(process.env.REDIS_HOST) || "localhost",
+//   port: Number(process.env.REDIS_PORT) || 6379,
+//   password: String(process.env.REDIS_PASSWORD) || "",
+// };
+
 const RedisConnection = {
-  host: String(process.env.REDIS_HOST) || "localhost",
-  port: Number(process.env.REDIS_PORT) || 6379,
-  password: String(process.env.REDIS_PASSWORD) || "",
+  host: String(process.env.REDIS_HOST),
+  port: Number(process.env.REDIS_PORT),
+  password: String(process.env.REDIS_PASSWORD),
 };
 
 const pdfProcessingQueue = new Queue("pdf-processing", {

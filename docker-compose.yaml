@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    # When postgres container starts for the first time, apply prisma migrations and modify VectorEmbedding table
+    command: >
+      sh -c "
+        until pg_isready -h ${POSTGRES_HOST} -U ${POSTGRES_USER}; do
+          echo 'Waiting for PostgreSQL...'
+          sleep 2
+        done &&
+        npx prisma migrate deploy &&
+        echo 'Modifying VectorEmbedding table...' &&
+        PGPASSWORD=${POSTGRES_PASSWORD} psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'ALTER TABLE \"VectorEmbedding\" ALTER COLUMN \"embedding\" TYPE vector(512);' &&
+        npm run dev
+      "
+
+  postgres:
+    image: postgres:16
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
+    entrypoint: ["/docker-entrypoint-initdb.d/entrypoint.sh"]
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=mysecurepassword
+
+volumes:
+  postgres_data:
