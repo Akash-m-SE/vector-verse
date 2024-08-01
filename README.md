@@ -4,7 +4,7 @@
 <img src="https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/vector-verse.png" alt="Logo" width="400" height="400"/>
 
 **Vector-Verse** is a Next.js web application designed to facilitate interaction with PDF documents through an intuitive chat interface. Users can create and manage projects by uploading PDFs, which are then processed to extract and analyze the content. Project details are securely stored in a database. The application features a comprehensive dashboard for users to view and manage their projects, and provides contextual responses to queries based on the content of the PDFs.
-## Features
+## Features 🌟
 
 - **Dashboard:** Users can efficiently manage their projects through a personalized dashboard, allowing them to view, delete, and monitor the status of all their projects.
 
@@ -13,7 +13,7 @@
 - **Database Integration:** Vector embeddings and corresponding text chunks are stored in a PostgreSQL database, utilizing the pgvector extension to facilitate efficient vector similarity searches.
 
 - **RAG-based Chat Interface:** Users can engage with their PDF content via an advanced conversational interface, which provides contextual responses based on vector similarity search, powered by a language model (LLM).
-## Screenshots 
+## Screenshots 📸 
 
 ![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Main+Page.jpg)
 
@@ -24,12 +24,12 @@
 ![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Chat+Interface.jpg)
 
 
-## Deployment
+## Deployment 🚀
 
 You can access the live version of Vector-Verse here: [Live Demo](https://vector-verse.vercel.app/)
 
 
-## Environment Setup
+## Environment Setup 🛠️
 
 To run this project, you will need to add the following environment variables to your .env file (a template has been provided as .env.example)
 
@@ -56,7 +56,7 @@ To run this project, you will need to add the following environment variables to
 
 - If you are using postgres as a standalone container, then you would need to install the pgvector extension inside your docker container. Check out the pgvector documentation here - **https://github.com/pgvector/pgvector**
 
-## Installation
+## Installation 🔧 
 
 **Docker-Compose**
 
@@ -175,12 +175,12 @@ npm run dev
 ```
 
 **14.** Open your application via port - http://localhost:3000
-## Authors
+## Authors ✍️ 
 
 - [Akash](https://github.com/Akash-m-SE)
 
 
-## Tech Stack
+## Tech Stack 💻 
 
 **Language:** TypeScript
 
