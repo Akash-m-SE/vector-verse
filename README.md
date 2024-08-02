@@ -68,7 +68,7 @@ To run this project, you will need to add the following environment variables to
 cd vector-verse
 ```
 
-**3.** Set up the [Environment Variables](#environment-setup)
+**3.** Set up the [Environment Variables](#environment-setup-)
 
 **4.** Dockerize the application and start up the containers for postgres, redis and the application itself.
 ```
@@ -106,7 +106,7 @@ cd vector-verse
 npm install
 ```
 
-**4.** Set up the [Environment Variables](#environment-setup)
+**4.** Set up the [Environment Variables](#environment-setup-)
 
 **5.** Start the redis container locally
 ```
