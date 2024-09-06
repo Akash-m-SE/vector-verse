@@ -1,6 +1,6 @@
 # Vector-Verse
 
-<img src="https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/vector-verse.png" alt="Logo" width="400" height="400"/>
+<img src="https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Vector+Verse+Github+Readme/vector-verse.png" alt="Logo" width="400" height="400"/>
 
 **Vector-Verse** is a Next.js web application designed to facilitate interaction with PDF documents through an intuitive chat interface. Users can create and manage projects by uploading PDFs, which are then processed to extract and analyze the content. Project details are securely stored in a database. The application features a comprehensive dashboard for users to view and manage their projects, and provides contextual responses to queries based on the content of the PDFs.
 
@@ -16,13 +16,13 @@
 
 ## Screenshots 📸
 
-![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Main+Page.jpg)
+![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Vector+Verse+Github+Readme/Main+Page.jpg)
 
-![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Create+New+Project.jpg)
+![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Vector+Verse+Github+Readme/Create+New+Project.jpg)
 
-![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Dashboard.jpg)
+![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Vector+Verse+Github+Readme/Dashboard.jpg)
 
-![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Chat+Interface.jpg)
+![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Vector-Verse/Vector+Verse+Github+Readme/Chat+Interface.jpg)
 
 ## Deployment 🚀
 
