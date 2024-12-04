@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../../public/logo.png";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
@@ -13,13 +13,15 @@ import { usePathname } from "next/navigation";
 const Navbar = () => {
   const session = useSession();
   const pathName = usePathname();
+  const [loggedInUserPicture, setLoggedInUserPicture] = useState(
+    "https://github.com/shadcn.png",
+  );
 
-  let loggedInUserPicture = "https://github.com/shadcn.png";
-
-  if (session.status === "authenticated") {
-    // @ts-ignore
-    loggedInUserPicture = session.data.user.picture;
-  }
+  useEffect(() => {
+    if (session.status === "authenticated") {
+      setLoggedInUserPicture(session?.data?.user?.picture as string);
+    }
+  }, [session.status]);
 
   // Hide the navbar if the user is on the sign-in page
   if (pathName === "/sign-in") {
@@ -47,10 +49,7 @@ const Navbar = () => {
       <div id="navbar-avatar" className="m-2 gap-5 flex w-1/3 justify-end">
         <div>
           <Avatar>
-            <AvatarImage
-              //@ts-ignore
-              src={loggedInUserPicture}
-            />
+            <AvatarImage src={loggedInUserPicture} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>

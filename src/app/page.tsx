@@ -19,11 +19,11 @@ const Links = [
 
 export default function Home() {
   return (
-    <main className="flex max-h-screen w-full flex-col items-center justify-between p-24">
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-        Welcome To Your Home Page
-      </h2>
-      <Cards redirectLinks={Links} />
-    </main>
+    <>
+      <main className="flex flex-col items-center justify-center mt-10 p-2">
+        <h2 className="">Welcome to your Home Page</h2>
+        <Cards redirectLinks={Links} />
+      </main>
+    </>
   );
 }

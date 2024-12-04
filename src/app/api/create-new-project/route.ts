@@ -15,12 +15,8 @@ export const maxDuration = 60;
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    // console.log("Server Session = ", session);
 
-    // Accessing the incoming request items from formData from request
     const formData = await request.formData();
-    // console.log("shadcn form values = ", formData);
-
     const title = formData.get("title");
     const description = formData.get("description");
     const file = formData.get("file[]") as File | null;
@@ -35,8 +31,7 @@ export async function POST(request: NextRequest) {
     const uniqueFile = await generateUniqueFileName(file); //generate unique file name
     // console.log("Unique File Details = ", uniqueFile);
 
-    // Uploading the file from AWS S3
-    const response = await uploadFileToS3(uniqueFile);
+    const response = await uploadFileToS3(uniqueFile); //uploading file to s3
 
     if (!response) {
       return NextResponse.json(
@@ -44,7 +39,6 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-
     const { fileName, objectURL } = response;
 
     const responseFromProject: ProjectType = await prisma.project.create({

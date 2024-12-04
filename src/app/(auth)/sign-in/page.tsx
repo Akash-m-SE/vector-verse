@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { WavyBackground } from "@/components/ui/wavy-background";
-import TypeWriterComponent from "./TypeWriterComponent";
+import TypeWriterComponent from "./_components/TypeWriterComponent";
 import { signIn } from "next-auth/react";
 
 const page: React.FC = () => {

@@ -1,3 +1,5 @@
+import NextAuth from "next-auth";
+
 import { Role, ProjectStatus } from "@prisma/client";
 
 type IndividualChatHistoryType = {
@@ -41,3 +43,21 @@ type MessagesType = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      picture?: string | null;
+    };
+  }
+
+  interface User {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    picture?: string | null;
+  }
+}
