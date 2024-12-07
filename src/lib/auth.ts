@@ -4,7 +4,7 @@ import prisma from "./prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { Adapter } from "next-auth/adapters";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
 
   providers: [
@@ -34,6 +34,11 @@ export const authOptions = {
 
     async session({ session, token }: any) {
       session.user = token;
+      // session.user = {
+      //   ...session.user,
+      //   sub: token.sub, // Explicitly add sub from the token
+      //   id: token.sub, // Also add as id for consistency
+      // };
       // console.log("Session = ", session, "session token = ", token);
       return session;
     },

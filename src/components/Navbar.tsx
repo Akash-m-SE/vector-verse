@@ -7,21 +7,21 @@ import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
-import { signOut, useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
-  const session = useSession();
+  const { data: session, status } = useSession();
   const pathName = usePathname();
   const [loggedInUserPicture, setLoggedInUserPicture] = useState(
     "https://github.com/shadcn.png",
   );
 
   useEffect(() => {
-    if (session.status === "authenticated") {
-      setLoggedInUserPicture(session?.data?.user?.picture as string);
+    if (status === "authenticated") {
+      setLoggedInUserPicture(session?.user?.picture as string);
     }
-  }, [session.status]);
+  }, [status]);
 
   // Hide the navbar if the user is on the sign-in page
   if (pathName === "/sign-in") {

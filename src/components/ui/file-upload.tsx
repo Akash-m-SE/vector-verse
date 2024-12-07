@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { IconUpload } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
@@ -28,18 +28,24 @@ const secondaryVariant = {
 export const FileUpload = ({
   onChange,
   multipleFiles,
+  reset,
 }: {
   onChange?: (files: File[]) => void;
   multipleFiles: boolean;
+  reset?: boolean;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    setFiles([]);
+  }, [reset]);
+
   const handleFileChange = (newFiles: File[]) => {
-    if (multipleFiles === true) {
+    if (multipleFiles) {
       setFiles((prevFiles) => [...prevFiles, ...newFiles]); //for multiple files
     } else {
-      setFiles(newFiles);
+      setFiles(newFiles); //for single file
     }
     onChange && onChange(newFiles);
   };

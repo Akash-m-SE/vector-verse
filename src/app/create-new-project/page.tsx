@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,29 +22,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Loading from "./loading";
 import { FileUpload } from "@/components/ui/file-upload";
-
-const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
-  }),
-  file: z
-    .any()
-    .optional()
-    .refine((fileList: File[] | undefined) => {
-      if (!fileList || !fileList.length) {
-        return false; // Indicate error if no file
-      }
-
-      const file = fileList[0]; // Assume single file selection
-      if (!file?.name) return false; // Handle missing file name
-
-      const fileExtension = file.name.split(".").pop()?.toLowerCase();
-      return fileExtension === "pdf";
-    }, "Only PDF files are allowed."),
-});
+import { loginFormSchema } from "@/types/zodSchemas";
 
 const ProfileForm: React.FC = () => {
   const { toast } = useToast();
@@ -54,23 +31,23 @@ const ProfileForm: React.FC = () => {
   const [isComponentMounted, setIsComponentMounted] = useState(false);
   const session = useSession();
 
-  const [files, setFiles] = useState<File[]>([]);
+  // const [files, setFiles] = useState<File[]>([]); //for old file upload component
 
   const initialValues = {
     title: "",
     description: "",
-    file: null,
+    file: undefined,
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: initialValues,
   });
 
-  const fileRef = form.register("file");
+  // const fileRef = form.register("file"); //for old file upload component
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (session.status === "unauthenticated") {
+  async function onSubmit(values: z.infer<typeof loginFormSchema>) {
+    if (session.status !== "authenticated") {
       toast({
         variant: "destructive",
         title: "Cannot create new project!",
@@ -155,7 +132,6 @@ const ProfileForm: React.FC = () => {
                     <Textarea
                       placeholder="Description for your project"
                       {...field}
-                      // className="w-[50vw] min-h-[30vh]"
                       className="w-full lg:w-[40vw] md:min-h-[15vh]"
                     />
                   </FormControl>
@@ -196,10 +172,11 @@ const ProfileForm: React.FC = () => {
                       name="file"
                       render={({ field: { onChange, value } }) => (
                         <FileUpload
-                          onChange={(files) => {
-                            onChange(files);
-                          }}
                           multipleFiles={false}
+                          reset={form.formState.isSubmitSuccessful}
+                          onChange={(file) => {
+                            onChange(file);
+                          }}
                         />
                       )}
                     />

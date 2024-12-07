@@ -23,7 +23,6 @@ const Chat: React.FC<ChatType> = ({ id }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(true);
   const session = useSession();
-  //@ts-ignore
   const userPicture = session?.data?.user?.picture;
 
   const scrollToBottom = () => {
@@ -105,10 +104,7 @@ const Chat: React.FC<ChatType> = ({ id }) => {
                         {message.content}
                       </div>
                       <Avatar>
-                        <AvatarImage
-                          //@ts-ignore
-                          src={userPicture}
-                        />
+                        <AvatarImage src={userPicture ? userPicture : ""} />
                       </Avatar>
                     </div>
                   )}

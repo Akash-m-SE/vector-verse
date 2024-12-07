@@ -51,6 +51,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       picture?: string | null;
+      sub?: string | null;
     };
   }
 
@@ -59,5 +60,6 @@ declare module "next-auth" {
     email?: string | null;
     image?: string | null;
     picture?: string | null;
+    sub?: string | null;
   }
 }

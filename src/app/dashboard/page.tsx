@@ -20,7 +20,6 @@ const Dashboard: React.FC = () => {
         const response = await axios.get("/api/dashboard");
         const { data } = response.data;
 
-        //@ts-ignore
         setProjects(data);
       } catch (error) {
         console.log("Error fetching projects", error);
