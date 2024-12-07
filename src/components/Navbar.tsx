@@ -24,44 +24,42 @@ const Navbar = () => {
   }, [status]);
 
   // Hide the navbar if the user is on the sign-in page
-  if (pathName === "/sign-in") {
-    return;
-  }
+  if (pathName === "/sign-in") return;
 
   return (
-    <div
-      className={`text-white bg-slate-900 h-20 p-4 flex justify-between sticky top-0 opacity-85`}
-    >
-      <div id="navbar-icon" className="w-1/3 h-fit">
-        <Link href={"/"} className="">
-          <Image src={logo} alt="logo" height={50} width={50} />
-        </Link>
-      </div>
-
-      <div
-        id="navbar-content"
-        className="flex p-2 gap-5 w-1/3 items-center justify-center"
-      >
-        <Link href={"/"}>Home</Link>
-        <Link href={"/dashboard"}>Dashboard</Link>
-      </div>
-
-      <div
-        id="navbar-avatar"
-        className="m-2 gap-5 flex w-1/3 justify-end h-fit"
-      >
-        <div>
-          <Avatar>
-            <AvatarImage src={loggedInUserPicture} />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+    <>
+      <div className="text-white bg-slate-900 h-20 p-4 hidden md:flex justify-between sticky top-0 opacity-85">
+        <div id="navbar-icon" className="w-1/3 h-fit">
+          <Link href={"/"} className="">
+            <Image src={logo} alt="logo" height={50} width={50} />
+          </Link>
         </div>
-        <ModeToggle />
-        <Button variant="destructive" onClick={() => signOut()}>
-          Logout
-        </Button>
+
+        <div
+          id="navbar-content"
+          className="flex p-2 gap-5 w-1/3 items-center justify-center"
+        >
+          <Link href={"/"}>Home</Link>
+          <Link href={"/dashboard"}>Dashboard</Link>
+        </div>
+
+        <div
+          id="navbar-avatar"
+          className="m-2 gap-5 flex w-1/3 justify-end h-fit"
+        >
+          <div>
+            <Avatar>
+              <AvatarImage src={loggedInUserPicture} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </div>
+          <ModeToggle />
+          <Button variant="destructive" onClick={() => signOut()}>
+            Logout
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

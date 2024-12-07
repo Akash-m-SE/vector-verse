@@ -1,6 +1,11 @@
 import NextAuth from "next-auth";
-
 import { Role, ProjectStatus } from "@prisma/client";
+
+type NavLink = {
+  title: string;
+  description: string;
+  link: string;
+};
 
 type IndividualChatHistoryType = {
   id: string;
