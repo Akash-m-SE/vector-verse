@@ -6,9 +6,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 60;
 
-export async function GET() {
+export async function GET(request: NextRequest, response: NextResponse) {
   try {
     const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json(
+        { error: "You are not logged in." },
+        { status: 401 },
+      );
+    }
 
     const projects: ProjectsListType = await prisma.project.findMany({
       where: {
@@ -21,7 +27,7 @@ export async function GET() {
     if (!projects) {
       return NextResponse.json(
         { messaage: "No projects found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -32,12 +38,12 @@ export async function GET() {
 
     return NextResponse.json(
       { data: modifiedProjects, message: "projects fetched successfully!" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong while fetching the projects." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

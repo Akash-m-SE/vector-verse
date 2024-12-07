@@ -34,11 +34,6 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }: any) {
       session.user = token;
-      // session.user = {
-      //   ...session.user,
-      //   sub: token.sub, // Explicitly add sub from the token
-      //   id: token.sub, // Also add as id for consistency
-      // };
       // console.log("Session = ", session, "session token = ", token);
       return session;
     },

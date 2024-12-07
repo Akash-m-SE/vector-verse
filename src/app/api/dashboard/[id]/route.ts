@@ -9,14 +9,17 @@ import { ChatHistoryType, MessagesType, ProjectType } from "@/types";
 
 export const maxDuration = 60;
 
-// export async function GET(context: { params: { id: string } }) {
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+  response: NextResponse,
+) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json(
         { error: "You are not logged in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -35,37 +38,38 @@ export async function GET({ params }: { params: { id: string } }) {
         pdfUrl: project?.pdfUrl,
         message: "Successfully fetched your project",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong while fetching your project." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json(
         { error: "You are not logged in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const userId = session.user.sub;
+    const userId = session?.user?.sub;
     if (!userId) {
       return NextResponse.json(
         { error: "User ID not found in session." },
-        { status: 401 }
+        { status: 401 },
       );
     }
-    const { id } = context.params;
+
+    const { id } = params;
     const body = await request.json();
 
     const { question } = body;
@@ -84,8 +88,6 @@ export async function POST(
 
     // Question Answer Chain with Context
     const response = await questionAnswerChain(id, question, chatHistory);
-
-    // console.log("Response from route = ", response);
 
     const responseContent =
       typeof response === "string" ? response : JSON.stringify(response);
@@ -112,20 +114,21 @@ export async function POST(
 
     return NextResponse.json(
       { message: "Success", userMessage: userMessage, aiMessage: aiMessage },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error = ", error);
     return NextResponse.json(
       { error: "Something went wrong" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: { id: string } },
+  response: NextResponse,
 ) {
   try {
     const { id } = context.params;
@@ -141,7 +144,7 @@ export async function DELETE(
     if (!project) {
       return NextResponse.json(
         { message: "Project not found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -171,12 +174,12 @@ export async function DELETE(
 
     return NextResponse.json(
       { message: "Successfully deleted the project" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { error: "Error while deleting the project" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

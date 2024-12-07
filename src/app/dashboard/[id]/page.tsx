@@ -1,6 +1,8 @@
+"use client";
+
 import Chat from "@/components/Chat";
 import PdfViewer from "@/components/PdfViewer";
-import React from "react";
+import React, { useEffect } from "react";
 
 interface ChatInterfaceType {
   params: {
@@ -9,7 +11,7 @@ interface ChatInterfaceType {
 }
 
 const ChatInterface: React.FC<ChatInterfaceType> = ({ params }) => {
-  const id: string = params.id;
+  const id = params.id;
 
   return (
     <>
