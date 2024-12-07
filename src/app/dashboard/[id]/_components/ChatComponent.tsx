@@ -60,7 +60,9 @@ const ChatComponent: React.FC<ChatType> = ({ id }) => {
     scrollToBottom();
 
     try {
-      const response = await axios.post(`/api/dashboard/${id}`, { question });
+      const response = await axios.post(`/api/dashboard/${id}/conversation`, {
+        question,
+      });
 
       const { userMessage, aiMessage } = response.data;
 

@@ -21,7 +21,7 @@ export default function Home() {
   return (
     <>
       <main className="flex flex-col items-center mt-10 p-2">
-        <h2 className="text-center">Welcome to your Home Page</h2>
+        <h3>Welcome to your Home Page</h3>
         <Cards redirectLinks={Links} />
       </main>
     </>
