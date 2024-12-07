@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { dummyMessages } from "@/utils/dummyData";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { EmptyMessageState } from "./EmptyState";
-import ChatSkeletonLoader from "./ChatSkeletonLoader";
+import { EmptyMessageState } from "@/components/EmptyState";
+import ChatSkeletonLoader from "@/components/ChatSkeletonLoader";
 import Loading from "@/app/dashboard/loading";
 import { Role } from "@prisma/client";
 import { MessagesType } from "@/types";
@@ -17,7 +17,7 @@ interface ChatType {
   id: string;
 }
 
-const Chat: React.FC<ChatType> = ({ id }) => {
+const ChatComponent: React.FC<ChatType> = ({ id }) => {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<MessagesType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -150,4 +150,4 @@ const Chat: React.FC<ChatType> = ({ id }) => {
   );
 };
 
-export default Chat;
+export default ChatComponent;

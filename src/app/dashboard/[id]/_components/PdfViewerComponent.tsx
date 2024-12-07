@@ -8,14 +8,14 @@ interface PdfViewerType {
   id: string;
 }
 
-const PdfViewer: React.FC<PdfViewerType> = ({ id }) => {
+const PdfViewerComponent: React.FC<PdfViewerType> = ({ id }) => {
   const [pdfUrl, setPdfUrl] = useState("");
   const [isComponentMounted, setIsComponentMounted] = useState(true);
 
   useEffect(() => {
     const fetchPdfUrl = async () => {
       try {
-        const response = await axios.get(`/api/dashboard/${id}`);
+        const response = await axios.get(`/api/dashboard/${id}/pdf`);
 
         setPdfUrl(response.data.pdfUrl);
       } catch (error) {
@@ -43,4 +43,4 @@ const PdfViewer: React.FC<PdfViewerType> = ({ id }) => {
   );
 };
 
-export default PdfViewer;
+export default PdfViewerComponent;

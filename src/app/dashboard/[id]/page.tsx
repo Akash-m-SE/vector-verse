@@ -1,8 +1,8 @@
 "use client";
 
-import Chat from "@/components/Chat";
-import PdfViewer from "@/components/PdfViewer";
-import React, { useEffect } from "react";
+import React from "react";
+import PdfViewerComponent from "./_components/PdfViewerComponent";
+import ChatComponent from "./_components/ChatComponent";
 
 interface ChatInterfaceType {
   params: {
@@ -20,10 +20,10 @@ const ChatInterface: React.FC<ChatInterfaceType> = ({ params }) => {
           id="PdfViewer"
           className="w-1/2 flex items-center justify-center min-h-[80vh]"
         >
-          <PdfViewer id={id} />
+          <PdfViewerComponent id={id} />
         </div>
         <div id="chatComponent" className="w-1/2">
-          <Chat id={id} />
+          <ChatComponent id={id} />
         </div>
       </div>
     </>
