@@ -6,9 +6,10 @@ import React, { useEffect, useState } from "react";
 
 interface PdfViewerType {
   id: string;
+  className?: string;
 }
 
-const PdfViewerComponent: React.FC<PdfViewerType> = ({ id }) => {
+const PdfViewerComponent: React.FC<PdfViewerType> = ({ id, className }) => {
   const [pdfUrl, setPdfUrl] = useState("");
   const [isComponentMounted, setIsComponentMounted] = useState(true);
 
@@ -31,12 +32,12 @@ const PdfViewerComponent: React.FC<PdfViewerType> = ({ id }) => {
   return (
     <>
       {isComponentMounted && <Loading />}
-      <div className="w-full h-full">
+      <div className={`w-full h-full ${className}`}>
         <iframe
           src={pdfUrl}
           height={"100%"}
           width={"100%"}
-          className="w-full h-full"
+          className="h-[90vh] lg:h-[89vh] xl:h-[85vh]"
         />
       </div>
     </>

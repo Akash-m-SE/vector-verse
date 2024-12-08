@@ -73,9 +73,7 @@ export async function POST(
 
     const { id } = params;
     const body = await request.json();
-
     const { question } = body;
-    // console.log("Question = ", question);
 
     // Fetching the Chat History
     const chatHistory: ChatHistoryType = await prisma.message.findMany({

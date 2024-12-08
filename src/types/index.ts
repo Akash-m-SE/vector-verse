@@ -1,13 +1,13 @@
 import NextAuth from "next-auth";
 import { Role, ProjectStatus } from "@prisma/client";
 
-type NavLink = {
+export type NavLink = {
   title: string;
   description: string;
   link: string;
 };
 
-type IndividualChatHistoryType = {
+export type IndividualChatHistoryType = {
   id: string;
   content: string;
   role: Role;
@@ -17,9 +17,9 @@ type IndividualChatHistoryType = {
   updatedAt: Date;
 };
 
-type ChatHistoryType = IndividualChatHistoryType[];
+export type ChatHistoryType = IndividualChatHistoryType[];
 
-type ProjectType = {
+export type ProjectType = {
   id: string;
   title: string;
   description: string;
@@ -31,15 +31,20 @@ type ProjectType = {
   updatedAt: Date;
 };
 
-type ProjectsTableType = ProjectType & {
+export enum SelectedComponent {
+  PDF,
+  CHAT,
+}
+
+export type ProjectsTableType = ProjectType & {
   redirectLink?: string;
 };
 
-type ProjectsTableListType = ProjectsTableType[];
+export type ProjectsTableListType = ProjectsTableType[];
 
-type ProjectsListType = ProjectType[];
+export type ProjectsListType = ProjectType[];
 
-type MessagesType = {
+export type MessagesType = {
   id: string;
   content: string;
   role: Role;

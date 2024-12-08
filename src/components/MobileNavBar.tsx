@@ -23,6 +23,8 @@ import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { ModeToggle } from "./ModeToggle";
 import { usePathname } from "next/navigation";
+import useAppStore from "@/store/store";
+import { SelectedComponent } from "@/types";
 
 interface NavLinkProps {
   icon: LucideIcon;
@@ -62,6 +64,32 @@ const NavLink = ({
   );
 };
 
+const OtherLinks: React.FC = () => {
+  const { setSelectedComponent } = useAppStore();
+
+  return (
+    <>
+      {/* TODO :- add css for hiding/showing the pdf/chat */}
+      <div
+        className="border-t border-b border-gray-800 pt-4 space-y-1 hover:cursor-pointer mb-5 mt-5"
+        id="others-links"
+      >
+        <NavLink
+          icon={FileText}
+          label="Pdf"
+          onClick={() => setSelectedComponent(SelectedComponent.PDF)}
+        />
+
+        <NavLink
+          icon={MessageSquare}
+          label="Chat"
+          onClick={() => setSelectedComponent(SelectedComponent.CHAT)}
+        />
+      </div>
+    </>
+  );
+};
+
 const UserProfile: React.FC = () => {
   const [loggedInUserPicture, setLoggedInUserPicture] = useState(
     "https://github.com/shadcn.png",
@@ -75,7 +103,7 @@ const UserProfile: React.FC = () => {
   }, [status]);
 
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center space-x-3 w-fit">
       <Avatar>
         <AvatarImage src={loggedInUserPicture} />
       </Avatar>
@@ -83,7 +111,6 @@ const UserProfile: React.FC = () => {
         <span className="text-sm font-medium">{session?.user?.name}</span>
         <span className="text-xs text-gray-400">{session?.user?.email}</span>
       </div>
-      <ModeToggle />
     </div>
   );
 };
@@ -95,7 +122,7 @@ const MobileNavBar: React.FC = () => {
 
   return (
     <>
-      <div className="px-4 py-3 bg-[#1a1a1a] block md:hidden">
+      <div className="px-4 py-3 bg-[#1a1a1a] block lg:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -129,17 +156,12 @@ const MobileNavBar: React.FC = () => {
                 </div>
               </div>
 
-              {/* TODO :- add css for hiding/showing the pdf/chat */}
-              <div
-                className="border-t border-b border-gray-800 pt-4 space-y-1 hover:cursor-pointer mb-5 mt-5"
-                id="others-links"
-              >
-                <NavLink icon={FileText} label="Pdf" />
-                <NavLink icon={MessageSquare} label="Chat" />
-              </div>
+              {/* Conditional rendering pdf and chat */}
+              <OtherLinks />
             </div>
             <div id="Sheet-Footer-Component">
-              <div className="border-t border-gray-800 space-y-1 hover:cursor-pointer mb-2">
+              <div className="border-t border-gray-800 space-y-1 hover:cursor-pointer mb-2 pt-3">
+                <ModeToggle /> <span>Toggle Theme</span>
                 <NavLink
                   icon={LogOut}
                   label="Log out"

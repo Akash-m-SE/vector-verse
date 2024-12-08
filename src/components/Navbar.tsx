@@ -28,7 +28,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="text-white bg-slate-900 h-20 p-4 hidden md:flex justify-between sticky top-0 opacity-85">
+      <div className="text-white bg-slate-900 h-20 p-4 hidden lg:flex justify-between sticky top-0 opacity-85">
         <div id="navbar-icon" className="w-1/3 h-fit">
           <Link href={"/"} className="">
             <Image src={logo} alt="logo" height={50} width={50} />
