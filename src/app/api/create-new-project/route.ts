@@ -9,34 +9,32 @@ import { addJobToQueue } from "@/actions/bullmq-actions";
 import { ProjectType } from "@/types";
 import { ProjectStatus } from "@prisma/client";
 import { generateUniqueFileName } from "@/actions/fileActions";
+import { loginFormSchema } from "@/types/zodSchemas";
 
 export const maxDuration = 60;
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, response: NextResponse) {
   try {
     const session = await getServerSession(authOptions);
-    // console.log("Server Session = ", session);
 
-    // Accessing the incoming request items from formData from request
     const formData = await request.formData();
-    // console.log("shadcn form values = ", formData);
+    const data = {
+      title: formData.get("title"),
+      description: formData.get("description"),
+      file: formData.get("file[]"),
+    };
 
-    const title = formData.get("title");
-    const description = formData.get("description");
-    const file = formData.get("file[]") as File | null;
-
-    if (!file) {
+    const safeData = loginFormSchema.safeParse(data);
+    if (!safeData.success) {
       return NextResponse.json(
-        { error: "File blob is required." },
+        { error: safeData.error.message },
         { status: 400 },
       );
     }
 
-    const uniqueFile = await generateUniqueFileName(file); //generate unique file name
-    // console.log("Unique File Details = ", uniqueFile);
-
-    // Uploading the file from AWS S3
-    const response = await uploadFileToS3(uniqueFile);
+    const { title, description, file } = safeData.data;
+    const uniqueFile = await generateUniqueFileName(file as File); //generate unique file name
+    const response = await uploadFileToS3(uniqueFile); //uploading file to s3
 
     if (!response) {
       return NextResponse.json(
@@ -44,9 +42,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-
     const { fileName, objectURL } = response;
-
     const responseFromProject: ProjectType = await prisma.project.create({
       data: {
         title: title as string,
@@ -54,7 +50,7 @@ export async function POST(request: NextRequest) {
         pdfName: fileName as string,
         pdfUrl: objectURL as string,
         status: ProjectStatus.CREATING,
-        userId: session?.user?.sub,
+        userId: session?.user?.sub as string,
       },
     });
 

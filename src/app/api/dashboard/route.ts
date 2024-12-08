@@ -6,23 +6,24 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 60;
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, response: NextResponse) {
   try {
     const session = await getServerSession(authOptions);
-    // console.log("Session details from server = ", session);
-    // console.log("User Id = ", session.user.sub);
+    if (!session) {
+      return NextResponse.json(
+        { error: "You are not logged in." },
+        { status: 401 },
+      );
+    }
 
     const projects: ProjectsListType = await prisma.project.findMany({
       where: {
-        userId: session?.user?.sub,
+        userId: session?.user?.sub as string,
       },
       orderBy: {
         createdAt: "desc",
       },
     });
-
-    // console.log("Projects = ", projects);
-
     if (!projects) {
       return NextResponse.json(
         { messaage: "No projects found" },
@@ -34,8 +35,6 @@ export async function GET(request: NextRequest) {
       ...project,
       redirectLink: `/dashboard/${project.id}`,
     }));
-
-    // console.log("Modified projects = ", modifiedProjects);
 
     return NextResponse.json(
       { data: modifiedProjects, message: "projects fetched successfully!" },

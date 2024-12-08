@@ -1,115 +1,14 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { deleteFileFromS3 } from "@/actions/aws-actions";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { questionAnswerChain } from "@/actions/langchain-actions";
-import { Role } from "@prisma/client";
-import { ChatHistoryType, MessagesType, ProjectType } from "@/types";
+import { ProjectType } from "@/types";
 
 export const maxDuration = 60;
-
-export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } },
-) {
-  try {
-    const { id } = context.params;
-
-    const project = await prisma.project.findUnique({
-      where: {
-        id: id,
-      },
-      select: {
-        pdfUrl: true,
-      },
-    });
-
-    return NextResponse.json(
-      {
-        pdfUrl: project?.pdfUrl,
-        message: "Successfully fetched your project",
-      },
-      { status: 200 },
-    );
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Something went wrong while fetching your project." },
-      { status: 500 },
-    );
-  }
-}
-
-export async function POST(
-  request: NextRequest,
-  context: { params: { id: string } },
-) {
-  try {
-    const session = await getServerSession(authOptions);
-    const userId = session.user.sub;
-    const { id } = context.params;
-    // console.log("Id = ", id);
-
-    const body = await request.json();
-
-    const { question } = body;
-    // console.log("Question = ", question);
-
-    // Fetching the Chat History
-    const chatHistory: ChatHistoryType = await prisma.message.findMany({
-      where: {
-        projectId: id,
-        userId: userId,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-    });
-
-    // Question Answer Chain with Context
-    const response = await questionAnswerChain(id, question, chatHistory);
-
-    // console.log("Response from route = ", response);
-
-    const responseContent =
-      typeof response === "string" ? response : JSON.stringify(response);
-
-    const userMessage: MessagesType = await prisma.message.create({
-      data: {
-        content: question,
-        role: Role.USER,
-        userId: userId,
-        projectId: id,
-      },
-    });
-
-    const aiMessage: MessagesType = await prisma.message.create({
-      data: {
-        content: responseContent,
-        role: Role.AI,
-        userId: userId,
-        projectId: id,
-      },
-    });
-
-    // console.log("user messages = ", userMessage, " ai message = ", aiMessage);
-
-    return NextResponse.json(
-      { message: "Success", userMessage: userMessage, aiMessage: aiMessage },
-      { status: 200 },
-    );
-  } catch (error) {
-    console.log("Error = ", error);
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 },
-    );
-  }
-}
 
 export async function DELETE(
   request: NextRequest,
   context: { params: { id: string } },
+  response: NextResponse,
 ) {
   try {
     const { id } = context.params;

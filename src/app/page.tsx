@@ -1,9 +1,10 @@
 "use client";
 
 import { Cards } from "@/components/Cards";
+import { NavLink } from "@/types";
 import React from "react";
 
-const Links = [
+const NavLinks: NavLink[] = [
   {
     title: "New Project",
     description:
@@ -19,11 +20,11 @@ const Links = [
 
 export default function Home() {
   return (
-    <main className="flex max-h-screen w-full flex-col items-center justify-between p-24">
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-        Welcome To Your Home Page
-      </h2>
-      <Cards redirectLinks={Links} />
-    </main>
+    <>
+      <main className="flex flex-col items-center mt-10 p-2">
+        <h3>Welcome to your Home Page</h3>
+        <Cards redirectLinks={NavLinks} />
+      </main>
+    </>
   );
 }

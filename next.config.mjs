@@ -5,6 +5,9 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["pdf2json"],
   },
+  images: {
+    domains: ["images.unsplash.com", "github.com", "lh3.googleusercontent.com"],
+  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = [

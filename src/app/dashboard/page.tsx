@@ -20,7 +20,6 @@ const Dashboard: React.FC = () => {
         const response = await axios.get("/api/dashboard");
         const { data } = response.data;
 
-        //@ts-ignore
         setProjects(data);
       } catch (error) {
         console.log("Error fetching projects", error);
@@ -43,14 +42,14 @@ const Dashboard: React.FC = () => {
       {projects.length === 0 ? (
         <EmptyDashboardState />
       ) : (
-        <div className="flex flex-col items-center justify-center m-5">
-          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-            Welcome To Your Dashboard
-          </h2>
-          <div className="container mx-auto py-10">
-            <DataTable columns={columns} data={projects} />
+        <>
+          <div className="flex flex-col items-center justify-center mt-10">
+            <h3>Welcome To Your Dashboard</h3>
+            <div className="container mx-auto py-10">
+              <DataTable columns={columns} data={projects} />
+            </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

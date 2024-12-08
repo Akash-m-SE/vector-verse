@@ -16,15 +16,15 @@ const ChatSkeletonLoader: React.FC<ChatSkeletonLoaderType> = ({
   return (
     <>
       <div className={`flex gap-2 w-full mb-2 p-2 ${className}`}>
-        <div id="Image-Container">
+        {/* <div id="Image-Container">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
           </Avatar>
-        </div>
+        </div> */}
         <div id="Skeleton-Container" className="flex flex-col gap-2 m-2">
-          <Skeleton className="w-[40vw] h-[20px] rounded-full" />
-          <Skeleton className="w-[25vw] h-[20px] rounded-full" />
-          <Skeleton className="w-[15vw] h-[20px] rounded-full" />
+          <Skeleton className="w-[60vw] lg:w-[30vw] h-[20px] rounded-full" />
+          <Skeleton className="w-[45vw] lg:w-[15vw] h-[20px] rounded-full" />
+          <Skeleton className="w-[30vw] lg:w-[10vw] h-[20px] rounded-full" />
         </div>
       </div>
     </>

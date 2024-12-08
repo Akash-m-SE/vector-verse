@@ -2,14 +2,13 @@
 
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,32 +21,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Loading from "./loading";
-
-const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
-  }),
-  file: z
-    // .instanceof(FileList)
-    .any()
-    .optional()
-    .refine((fileList: FileList | undefined) => {
-      if (!fileList || !fileList.length) {
-        // Handle case where no file is selected
-        return false; // Indicate error
-      }
-
-      const file = fileList.item(0); // Assume single file selection
-      if (!file?.name) return false; // Handle missing file name
-
-      const fileExtension = file.name.split(".").pop()?.toLowerCase();
-      return fileExtension === "pdf";
-    }, "Only PDF files are allowed."),
-  // file: typeof window === "undefined" ? z.any() : z.instanceof(FileList),
-});
+import { FileUpload } from "@/components/ui/file-upload";
+import { loginFormSchema } from "@/types/zodSchemas";
 
 const ProfileForm: React.FC = () => {
   const { toast } = useToast();
@@ -56,21 +31,23 @@ const ProfileForm: React.FC = () => {
   const [isComponentMounted, setIsComponentMounted] = useState(false);
   const session = useSession();
 
+  // const [files, setFiles] = useState<File[]>([]); //for old file upload component
+
   const initialValues = {
     title: "",
     description: "",
-    file: null,
+    file: undefined,
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: initialValues,
   });
 
-  const fileRef = form.register("file");
+  // const fileRef = form.register("file"); //for old file upload component
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (session.status === "unauthenticated") {
+  async function onSubmit(values: z.infer<typeof loginFormSchema>) {
+    if (session.status !== "authenticated") {
       toast({
         variant: "destructive",
         title: "Cannot create new project!",
@@ -81,7 +58,6 @@ const ProfileForm: React.FC = () => {
 
     try {
       setIsLoading(true);
-      // console.log("Submitted Values form frontend are = ", values);
       setIsComponentMounted(true);
 
       const response = await axios.post("/api/create-new-project", values, {
@@ -89,7 +65,6 @@ const ProfileForm: React.FC = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
       setIsComponentMounted(false);
 
       if (response) {
@@ -99,15 +74,13 @@ const ProfileForm: React.FC = () => {
         });
 
         form.reset(initialValues);
-
-        // Redirecting the user to the dashboard
         router.push("/dashboard");
       }
     } catch (error: any) {
-      console.log(
-        "Something went wrong while posting the values to backend =",
-        error,
-      );
+      // console.log(
+      //   "Something went wrong while posting the values to backend =",
+      //   error
+      // );
       toast({
         variant: "destructive",
         title: "Uh Oh! Something went wrong!",
@@ -127,16 +100,14 @@ const ProfileForm: React.FC = () => {
   return (
     <>
       {isComponentMounted && <Loading />}
-      <div className="flex flex-col items-center justify-center p-5 m-10 gap-5 h-full">
+
+      <div className="flex flex-col items-center justify-center p-3 gap-5 h-full">
         <div className="flex w-auto items-center justify-between">
-          <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-            Create Your Project
-          </h1>
+          <h1>Create a new project</h1>
         </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            {/* Title of the project*/}
             <FormField
               control={form.control}
               name="title"
@@ -144,14 +115,13 @@ const ProfileForm: React.FC = () => {
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Title" {...field} />
+                    <Input placeholder="Title for your project" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Description of the project*/}
             <FormField
               control={form.control}
               name="description"
@@ -162,7 +132,7 @@ const ProfileForm: React.FC = () => {
                     <Textarea
                       placeholder="Description for your project"
                       {...field}
-                      className="w-[50vw] min-h-[30vh]"
+                      className="w-full lg:w-[40vw] md:min-h-[15vh]"
                     />
                   </FormControl>
                   <FormMessage />
@@ -170,8 +140,8 @@ const ProfileForm: React.FC = () => {
               )}
             />
 
-            {/* Upload PDF File */}
-            <FormField
+            {/* Old file upload component */}
+            {/* <FormField
               control={form.control}
               name="file"
               render={({ field }) => (
@@ -188,15 +158,49 @@ const ProfileForm: React.FC = () => {
                   <FormMessage />
                 </FormItem>
               )}
+            /> */}
+
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Upload Your PDF File</FormLabel>
+                  <FormControl>
+                    <Controller
+                      control={form.control}
+                      name="file"
+                      render={({ field: { onChange, value } }) => (
+                        <FileUpload
+                          multipleFiles={false}
+                          reset={form.formState.isSubmitSuccessful}
+                          onChange={(file) => {
+                            onChange(file);
+                          }}
+                        />
+                      )}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             <div className="flex items-center justify-between">
-              <Button type="submit" disabled={isLoading}>
-                Submit
+              <Button
+                disabled={isLoading}
+                onClick={(e) => handleResetForm(e)}
+                className="bg-red-400"
+              >
+                Reset Form
               </Button>
 
-              <Button disabled={isLoading} onClick={(e) => handleResetForm(e)}>
-                Reset Form
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="bg-green-400"
+              >
+                Submit
               </Button>
             </div>
           </form>
