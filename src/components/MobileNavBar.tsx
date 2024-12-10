@@ -67,6 +67,9 @@ const NavLink = ({
 const OtherLinks: React.FC = () => {
   const { setSelectedComponent } = useAppStore();
 
+  const pathName = usePathname();
+  if (!pathName.startsWith("/dashboard/")) return;
+
   return (
     <>
       {/* TODO :- add css for hiding/showing the pdf/chat */}

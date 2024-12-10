@@ -37,7 +37,7 @@ const PdfViewerComponent: React.FC<PdfViewerType> = ({ id, className }) => {
           src={pdfUrl}
           height={"100%"}
           width={"100%"}
-          className="h-[90vh] lg:h-[89vh] xl:h-[85vh]"
+          className="h-[90vh] lg:h-[89vh] xl:h-[89vh] "
         />
       </div>
     </>
