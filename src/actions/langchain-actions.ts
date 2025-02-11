@@ -16,6 +16,8 @@ import { formatDocumentsAsString } from "langchain/util/document";
 import { Role } from "@prisma/client";
 import { ChatHistoryType, IndividualChatHistoryType } from "@/types";
 
+export async function PDFLoader() {}
+
 // Function to split the text into chunks
 export async function textSplitter(text: string) {
   // Converting the extracted text into document

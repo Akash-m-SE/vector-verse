@@ -35,7 +35,6 @@ const worker = new Worker(
 
     // Extract data from PDF file
     const extractedText = await extractDataFromPdf(fileFromS3);
-    // console.log("Extracted pdf text = ", extractedText);
 
     // Generating the vector embeddings and storing them in database
     await generateVectorEmbeddingsAndStoreThemInDB(extractedText, projectId);

@@ -1,33 +1,16 @@
-import PDFParser from "pdf2json";
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 
-// Modify the extract function to accept a byte array
-async function extract(byteArrayFile: Uint8Array): Promise<string> {
-  const pdfParser = new (PDFParser as any)(null, 1);
-
-  return new Promise<string>((resolve, reject) => {
-    pdfParser.on("pdfParser_dataError", (errData: any) => {
-      console.error("Parser Error =", errData.parserError);
-      reject(new Error("Error parsing PDF"));
-    });
-
-    pdfParser.on("pdfParser_dataReady", () => {
-      const parsedText = (pdfParser as any).getRawTextContent();
-      resolve(parsedText);
-    });
-
-    // Load the PDF from the byte array
-    pdfParser.parseBuffer(byteArrayFile);
-  });
-}
-
-export async function extractDataFromPdf(byteArrayFile: any): Promise<string> {
+export async function extractDataFromPdf(byteArrayFile: Uint8Array) {
   try {
-    const extractedText = await extract(byteArrayFile);
+    const blob = new Blob([byteArrayFile]);
 
-    // console.log("Extracted Text = ", extractedText);
-    return extractedText;
+    const loader = new PDFLoader(blob);
+
+    const docs = await loader.load();
+
+    return docs[0].pageContent;
   } catch (error) {
-    console.log("Error while parsing the pdf file =", error);
-    throw new Error("Error extracting data from PDF");
+    console.log("Error while extracting data from PDF =", error);
+    throw new Error("Error while extracting data from PDF");
   }
 }
