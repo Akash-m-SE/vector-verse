@@ -4,12 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Role } from "@prisma/client";
 import { dummyMessages } from "@/utils/dummyData";
@@ -26,7 +21,7 @@ const EmptyChat: React.FC = () => {
     <Card>
       {/* TODO:- make this optional when theres no conversation */}
       <CardContent className="flex flex-row items-center justify-center text-center h-[80vh] lg:h-[80vh] xl:h-[81vh]">
-        <h2>What can i help you with?</h2>
+        <h2>What can i help you with ?</h2>
       </CardContent>
     </Card>
   );
@@ -120,10 +115,11 @@ const ChatComponent: React.FC<ChatType> = ({ id, className }) => {
             <div id="MessagesEnd"></div>
           </CardContent>
         )}
-        <CardFooter id="chat-message-box" className="flex">
+
+        <div className="p-3" id="card-footer">
           <form
             onSubmit={(e) => handleSubmit(e)}
-            className="flex w-full items-center space-x-2 "
+            className="flex w-full items-center space-x-2"
           >
             <Input
               id="message"
@@ -143,7 +139,7 @@ const ChatComponent: React.FC<ChatType> = ({ id, className }) => {
               <span className="sr-only">Send</span>
             </Button>
           </form>
-        </CardFooter>
+        </div>
       </Card>
     </>
   );
