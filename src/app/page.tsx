@@ -9,7 +9,7 @@ const NavLinks: NavLink[] = [
     title: "New Project",
     description:
       "Create a new project to start asking questions about your pdf",
-    link: "/create-new-project",
+    link: "/projects",
   },
   {
     title: "Dashboard",

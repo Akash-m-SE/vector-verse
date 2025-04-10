@@ -40,7 +40,7 @@ const DeleteProjectButton: React.FC<DeleteProjectButtonType> = ({ id }) => {
         description: "Your Project is being deleted right now!!",
       });
 
-      const response = await axios.delete(`/api/dashboard/${id}`);
+      const response = await axios.delete(`/api/projects/${id}`);
 
       if (response.status === 200) {
         toast({

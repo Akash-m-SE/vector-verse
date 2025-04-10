@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { DataTable } from "../DashboardUI/data-table";
-import { columns } from "../DashboardUI/columns";
+import { DataTable } from "./DashboardUI/data-table";
+import { columns } from "./DashboardUI/columns";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { EmptyDashboardState } from "@/components/EmptyState";
@@ -17,7 +17,7 @@ const Dashboard: React.FC = () => {
     const fetchProjects = async () => {
       if (session.status === "unauthenticated") return;
       try {
-        const response = await axios.get("/api/dashboard");
+        const response = await axios.get("/api/projects");
         const { data } = response.data;
 
         setProjects(data);

@@ -3,7 +3,20 @@ process.env.TF_CPP_MIN_LOG_LEVEL = "2";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["images.unsplash.com", "github.com", "lh3.googleusercontent.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "github.com",
+      },
+    ],
   },
   webpack: (config, { isServer }) => {
     if (isServer) {

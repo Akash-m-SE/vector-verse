@@ -39,7 +39,7 @@ const ChatComponent: React.FC<ChatType> = ({ id }) => {
   useEffect(() => {
     const fetchConversation = async () => {
       try {
-        const response = await axios.get(`/api/dashboard/${id}/conversation`);
+        const response = await axios.get(`/api/projects/${id}/conversation`);
         setMessages(response.data.messages);
       } catch (error) {
         console.log("Error while fetching conversation", error);
@@ -60,7 +60,7 @@ const ChatComponent: React.FC<ChatType> = ({ id }) => {
     scrollToBottom();
 
     try {
-      const response = await axios.post(`/api/dashboard/${id}/conversation`, {
+      const response = await axios.post(`/api/projects/${id}/conversation`, {
         question,
       });
 

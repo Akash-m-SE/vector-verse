@@ -10,8 +10,51 @@ import { ProjectType } from "@/types";
 import { ProjectStatus } from "@prisma/client";
 import { generateUniqueFileName } from "@/actions/fileActions";
 import { loginFormSchema } from "@/types/zodSchemas";
+import { ProjectsListType, ProjectsTableListType } from "@/types";
 
 export const maxDuration = 60;
+
+export async function GET(request: NextRequest, response: NextResponse) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json(
+        { error: "You are not logged in." },
+        { status: 401 },
+      );
+    }
+
+    const projects: ProjectsListType = await prisma.project.findMany({
+      where: {
+        userId: session?.user?.sub as string,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    if (!projects) {
+      return NextResponse.json(
+        { messaage: "No projects found" },
+        { status: 400 },
+      );
+    }
+
+    const modifiedProjects: ProjectsTableListType = projects.map((project) => ({
+      ...project,
+      redirectLink: `/dashboard/${project.id}`,
+    }));
+
+    return NextResponse.json(
+      { data: modifiedProjects, message: "projects fetched successfully!" },
+      { status: 200 },
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Something went wrong while fetching the projects." },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(request: NextRequest, response: NextResponse) {
   try {

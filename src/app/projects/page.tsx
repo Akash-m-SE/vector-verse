@@ -60,7 +60,7 @@ const ProfileForm: React.FC = () => {
       setIsLoading(true);
       setIsComponentMounted(true);
 
-      const response = await axios.post("/api/create-new-project", values, {
+      const response = await axios.post("/api/projects", values, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

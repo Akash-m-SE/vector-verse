@@ -24,7 +24,7 @@ export function EmptyDashboardState() {
       >
         You have not created any projects yet to be displayed on your dashboard.
         <br />
-        <Link href="/create-new-project">
+        <Link href="/projects">
           <Highlight className="dark:text-green-500 dark:hover:text-white duration-500 text-blue-600 hover:text-black p-2">
             Create a new Project?
           </Highlight>

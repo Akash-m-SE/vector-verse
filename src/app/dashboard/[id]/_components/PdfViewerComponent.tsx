@@ -16,7 +16,7 @@ const PdfViewerComponent: React.FC<PdfViewerType> = ({ id, className }) => {
   useEffect(() => {
     const fetchPdfUrl = async () => {
       try {
-        const response = await axios.get(`/api/dashboard/${id}/pdf`);
+        const response = await axios.get(`/api/projects/${id}/pdf`);
 
         setPdfUrl(response.data.pdfUrl);
       } catch (error) {
