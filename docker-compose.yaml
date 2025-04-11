@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: app
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,14 +18,15 @@ services:
           echo 'Waiting for PostgreSQL...'
           sleep 2
         done &&
-        npx prisma migrate deploy &&
+        pnpm prisma migrate deploy &&
         echo 'Modifying VectorEmbedding table...' &&
         PGPASSWORD=${POSTGRES_PASSWORD} psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'ALTER TABLE \"VectorEmbedding\" ALTER COLUMN \"embedding\" TYPE vector(512);' &&
-        npm run dev
+        pnpm start
       "
 
   postgres:
-    image: postgres:16
+    container_name: postgres
+    image: pgvector/pgvector:pg16
     ports:
       - 5432:5432
     environment:
@@ -34,10 +36,9 @@ services:
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts/entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
-    entrypoint: ["/docker-entrypoint-initdb.d/entrypoint.sh"]
 
   redis:
+    container_name: redis
     image: redis:latest
     ports:
       - 6379:6379
