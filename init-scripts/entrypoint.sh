@@ -1,22 +1,16 @@
+# entrypoint.sh script is absolutely not required for this build
+
 #!/bin/sh
 set -e
 
 # Flag for scripts
 INIT_FLAG="/var/lib/postgresql/data/pg_initialized"
 
-echo "Starting PostgreSQL server..."
-docker-entrypoint.sh postgres &
-
-echo "Waiting for PostgreSQL to start..."
-until pg_isready -h "$POSTGRES_HOST" -U "$POSTGRES_USER"; do
-  echo "Waiting for PostgreSQL..."
-  sleep 2
-done
-
 if [ ! -f "$INIT_FLAG" ]; then
-  echo "Updating Packages, Installing dependencies and pgvector..."
-  apt-get update
-  apt-get install -y git build-essential postgresql-server-dev-16
+  echo "Installing pgvector..."
+  # Use apk (Alpine package manager) instead of apt-get
+  apk update
+  apk install -y git build-essential postgresql-dev-16
 
   # Clean up any existing pgvector directory before cloning
   if [ -d /tmp/pgvector ]; then
@@ -31,15 +25,12 @@ if [ ! -f "$INIT_FLAG" ]; then
   make
   make install
 
-  echo "Creating pgvector extension in the database..."
-  psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS vector;"
-
-  echo "Checking if database exists and creating if not..."
-  psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '$POSTGRES_DB'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE $POSTGRES_DB"
-
+  # Create the extension
+  echo "CREATE EXTENSION IF NOT EXISTS vector;" | psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+  
   touch "$INIT_FLAG"
-  echo "Entrypoint script finished successfully."
+  echo "pgvector installation completed."
 fi
 
-# Ensure PostgreSQL remains in the foreground
-wait
+# Execute the original entrypoint
+exec docker-entrypoint.sh postgres

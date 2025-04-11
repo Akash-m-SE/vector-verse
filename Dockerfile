@@ -1,20 +1,19 @@
 FROM node:20.11.1-alpine3.19
 
+RUN npm install pnpm --global
+RUN pnpm config set store-dir ~/.pnpm-store
+
 # Install PostgreSQL client tools
 RUN apk update && apk add --no-cache postgresql-client
 
 WORKDIR /app
 
-COPY package*.json ./
-
-# Installing dependencies for npm packages, linux OS, sharp for Nextjs and others
-RUN npm install --cpu=x64 --os=linux --libc=glibc sharp
-
 COPY . .
 
-RUN npx prisma generate
-RUN npm run build
+RUN pnpm install
+RUN pnpm prisma generate
+RUN pnpm build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "pnpm start"]
