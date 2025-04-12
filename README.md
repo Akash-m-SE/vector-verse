@@ -54,6 +54,8 @@ To run this project, you will need to add the following environment variables to
 
 - If you are using postgres as a standalone container, then you would need to install the pgvector extension inside your docker container. Check out the pgvector documentation here - **https://github.com/pgvector/pgvector**
 
+- You can also use the pgvector official image as your postgres image since it comes with postgres with pgvector installed . Check out the pgvector documentation here **https://github.com/pgvector/pgvector?tab=readme-ov-file#docker**
+
 ## Installation 🔧
 
 **Docker-Compose**
@@ -74,19 +76,9 @@ cd vector-verse
 docker-compose up
 ```
 
-This will also make postgres to install dependencies. Wait for the dependencies to get installed in postgres.
+This will also let the app container to generate the prisma client, deploy the prisma migrations, connect to the Postgres instance and modify the "embedding" field of the "VectorEmbedding" table to have 512 dimensions. Then it starts the application in production mode.
 
-Once all the dependencies have been installed, postgres container will automatically stop **_(yes i know this is an issue which i am currently looking into)_**
-
-**5**. Start the postgres container manually from Dockerhub or run this command to start all the containers
-
-```
-docker-compose start
-```
-
-This will make the app container to deploy the prisma migrations, connect to the Postgres instance and modify the "embedding" field of the "VectorEmbedding" table to have 512 dimensions. Then it starts the application in development mode.
-
-**6.** Open your application via port - http://localhost:3000
+**5.** Open your application via port - http://localhost:3000
 
 ##
 
@@ -103,7 +95,7 @@ cd vector-verse
 **3.** Install the Dependencies
 
 ```
-npm install
+pnpm install
 ```
 
 **4.** Set up the [Environment Variables](#environment-setup)
@@ -114,82 +106,109 @@ npm install
 docker run -d --name vector-verse-redis -e REDIS_PASSWORD=mysecurepassword -p 6379:6379 redis
 ```
 
-**6.** Start the postgres container locally
+**6.** Now we need a postgres container with pgvector extension. For that we can go in 2 ways :-
+
+<details>
+ <summary><strong>Cloning a pgvector official image</strong></summary>
+
+- Start the pgvector container locally
+`     docker run --name vector-verse-postgres -e POSTGRES_PASSWORD=mysecretpassword -e POSTGRES_USERNAME=postgres -p 5432:5432 -d pgvector/pgvector:pg16
+    `
+</details>
+
+<br>
+
+<details>
+<summary><strong>Cloning the postgres image and setting up pgvector inside it manually</strong></summary>
+
+- Start the postgres container locally
+
+  ```
+  docker run --name vector-verse-postgres -e POSTGRES_PASSWORD=mysecretpassword -e POSTGRES_USERNAME=postgres -p 5432:5432 -d postgres
+  ```
+
+- Docker exec into the postgres container
+
+  ```
+  docker exec -it <postgres-container-id> /bin/bash
+  ```
+
+- Update and install git and other dependencies inside the postgres container
+
+  ```
+  apt-get update
+  apt-get install -y git build-essential postgresql-server-dev-16
+  ```
+
+- Inside the container, install pgvector extension, more on this here :- **https://github.com/pgvector/pgvector**
+
+  Linux and Mac
+
+  Compile and install the extension (supports Postgres 12+)
+
+  ```
+  cd /tmp
+  git clone --branch v0.7.3 https://github.com/pgvector/pgvector.git
+  cd pgvector
+  make
+  make install # may need sudo
+  ```
+
+</details>
+
+<br>
+
+**7.** Apply db migrations and update the tables
+
+- Generate the prisma client and apply the migrations via terminal
+
+  ```
+  pnpm prisma generate
+  pnpm prisma migrate deploy
+  ```
+
+- Docker exec into the postgres container and log into the postgres instance
+
+  ```
+  psql -U postgres
+  ```
+
+- Install the vector extension
+
+  ```
+  CREATE EXTENSION IF NOT EXISTS vector;
+  ```
+
+- Update the "embedding" field of "VectorEmbedding" table to have 512 dimensions
+
+  ```
+  ALTER TABLE "VectorEmbedding" ALTER COLUMN "embedding" TYPE vector(512);
+  ```
+
+- Exit the postgres instance
+
+  ```
+  \q
+  ```
+
+- Exit the postgres container
+  ```
+  \exit
+  ```
+
+**8.** Start the application in development mode
 
 ```
-docker run --name vector-verse-postgres -e POSTGRES_PASSWORD=mysecretpassword -e POSTGRES_USERNAME=postgres -p 5432:5432 -d postgres
+pnpm dev
 ```
 
-**7.** Docker exec into the postgres container
+or in production mode
 
 ```
-docker exec -it <postgres-container-id> /bin/bash
+pnpm start
 ```
 
-**8.** Update and install git and other dependencies inside the postgres container
-
-```
-apt-get update
-apt-get install -y git build-essential postgresql-server-dev-16
-```
-
-**9.** Inside the container, install pgvector extension, more on this here :- **https://github.com/pgvector/pgvector**
-
-Linux and Mac
-
-Compile and install the extension (supports Postgres 12+)
-
-```
-cd /tmp
-git clone --branch v0.7.3 https://github.com/pgvector/pgvector.git
-cd pgvector
-make
-make install # may need sudo
-```
-
-**10.** Apply the migrations in the application
-
-```
-npx prisma migrate deploy
-```
-
-**11.** Docker exec into the postgres container and log into the postgres instance
-
-```
-psql -U postgres
-```
-
-Install the vector extension
-
-```
-CREATE EXTENSION IF NOT EXISTS vector;
-```
-
-Update the "embedding" field of "VectorEmbedding" table to have 512 dimensions
-
-```
-ALTER TABLE "VectorEmbedding" ALTER COLUMN "embedding" TYPE vector(512);
-```
-
-**12.** Exit the postgres instance
-
-```
-\q
-```
-
-Exit the postgres container
-
-```
-\exit
-```
-
-**13.** Start the application in development mode
-
-```
-npm run dev
-```
-
-**14.** Open your application via port - http://localhost:3000
+**9.** Open your application via port - http://localhost:3000
 
 ## Authors ✍️
 
@@ -201,11 +220,11 @@ npm run dev
 
 **Frontend:** Next.js, HTML, TailwindCSS, React Hook Form, Zod, shadcn/ui, Aceternity UI
 
-**Backend:** BullMQ, Redis, pdf2json, pgvector, LangChain
+**Backend:** Node.js, BullMQ, Redis, pdf2json, pgvector, LangChain
 
 **Authentication:** NextAuth.js
 
-**Database:** PostgreSQL, Prisma
+**Database:** PostgreSQL, Prisma, Supabase
 
 **Cloud Storage:** AWS S3
 
