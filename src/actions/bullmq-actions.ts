@@ -58,7 +58,7 @@ worker.on("completed", async (job) => {
   });
 });
 
-worker.on("failed", async (job: any, error) => {
+worker.on("failed", async (job: any, error: any) => {
   console.error(`Job ${job.id} (process pdf) failed:`, error);
 
   // Updating the project status to be failed in the database

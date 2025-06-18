@@ -9,8 +9,9 @@ export async function extractDataFromPdf(byteArrayFile: Uint8Array) {
     const docs = await loader.load();
 
     return docs[0].pageContent;
-  } catch (error) {
-    console.log("Error while extracting data from PDF =", error);
-    throw new Error("Error while extracting data from PDF");
+  } catch (error: any) {
+    throw new Error(
+      error.message || "Error while extracting data from PDF error",
+    );
   }
 }

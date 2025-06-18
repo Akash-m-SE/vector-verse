@@ -23,6 +23,7 @@ import { useSession } from "next-auth/react";
 import Loading from "./loading";
 import { FileUpload } from "@/components/ui/file-upload";
 import { loginFormSchema } from "@/types/zodSchemas";
+import { getPdfPageCount } from "@/actions/getPdfPageCount";
 
 const ProfileForm: React.FC = () => {
   const { toast } = useToast();
@@ -60,6 +61,8 @@ const ProfileForm: React.FC = () => {
       setIsLoading(true);
       setIsComponentMounted(true);
 
+      await getPdfPageCount(values.file as File[]);
+
       const response = await axios.post("/api/projects", values, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -81,6 +84,7 @@ const ProfileForm: React.FC = () => {
       //   "Something went wrong while posting the values to backend =",
       //   error
       // );
+
       toast({
         variant: "destructive",
         title: "Uh Oh! Something went wrong!",
