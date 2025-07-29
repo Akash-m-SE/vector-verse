@@ -35,4 +35,4 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           SUPABASE_TABLE: ${{secrets.SUPABASE_TABLE}}
-        run: pnpm dlx tsx scripts/ping-supabase.ts
+        run: pnpm dlx tsx scripts/ping-supabase-health.ts
