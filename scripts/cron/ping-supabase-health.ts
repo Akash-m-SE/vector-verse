@@ -6,9 +6,9 @@ import { createClient } from "@supabase/supabase-js";
     const SUPABASE_KEY = process.env.SUPABASE_KEY;
     const SUPABASE_TABLE = process.env.SUPABASE_TABLE;
 
-    if (!SUPABASE_URL || !SUPABASE_KEY) {
+    if (!SUPABASE_URL || !SUPABASE_KEY || !SUPABASE_TABLE) {
       throw new Error(
-        "Missing required environment variables: SUPABASE_URL or SUPABASE_KEY",
+        "Missing required environment variables: SUPABASE_URL or SUPABASE_KEY or SUPABASE_TABLE",
       );
     }
 
@@ -20,14 +20,14 @@ import { createClient } from "@supabase/supabase-js";
       .select("*")
       .limit(10);
 
-    if (!status || error) throw new Error("Failed to ping the table");
+    if (status !== 200) throw new Error(error?.message);
 
     console.log(
       `Ping successful! Retrieved  records from table: ${SUPABASE_TABLE}`,
     );
     console.log("Supabase is alive and healthy ✅");
   } catch (err: any) {
-    console.error("Error pinging Supabase ❌:", err.message);
+    console.error("Error pinging Supabase ❌:", err);
     process.exit(1);
   }
 })();
