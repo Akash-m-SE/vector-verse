@@ -3,14 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "clean": "rimraf .next/ '**/generated/' dist/",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "prettier . --write",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "prepare": "husky",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:generate": "pnpm prisma generate",
+    "db:migrate": "pnpm prisma migrate dev",
+    "db:deploy": "pnpm prisma migrate deploy",
+    "db:reset": "pnpm prisma migrate reset",
+    "db:seed": "pnpm prisma db seed",
+    "db:format": "pnpm prisma format",
+    "db:format:check": "pnpm prisma format --check",
+    "db:studio": "pnpm prisma studio"
   },
+  "packageManager": "pnpm@10.12.4",
   "dependencies": {
     "@auth/prisma-adapter": "^2.1.0",
     "@aws-sdk/client-s3": "^3.606.0",
@@ -77,9 +89,11 @@
     "eslint-config-next": "14.2.3",
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.0.11",
+    "lint-staged": "^16.1.2",
     "postcss": "^8",
     "prettier": "^3.3.1",
     "prisma": "^6.0.1",
+    "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

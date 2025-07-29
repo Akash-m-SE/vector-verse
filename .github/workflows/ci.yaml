@@ -1,0 +1,45 @@
+name: Continuous Integration
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        node-version: [22.14.0]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint the project
+        run: pnpm lint
+
+      - name: Check for formatting
+        run: pnpm format:check
+
+      - name: Check for formatting in schema.prisma
+        run: pnpm db:format --check
+
+      - name: Generate the prisma client
+        run: pnpm db:generate
+
+      - name: Build the project
+        run: pnpm build
+
+      # TODO: Add tests
